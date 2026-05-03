@@ -1,0 +1,9 @@
+# AMLSim fraud injection config.
+# 6 typologies — keep proportions realistic (fraud < 1%).
+patterns:
+  layering:        { count: 30, hops: 5, amount_range: [80000, 950000] }
+  round_tripping:  { count: 20, cycle_length: 3, amount_range: [100000, 800000] }
+  structuring:     { count: 25, sub_amounts: [180000, 220000], txns_per_account: 5 }
+  mule_fan_in:     { count: 15, fanin_count: 8 }
+  mule_fan_out:    { count: 15, fanout_count: 8 }
+  dormant_burst:   { count: 10, dormant_days: 120, burst_size: 4 }

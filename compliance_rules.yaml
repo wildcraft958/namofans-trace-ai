@@ -1,0 +1,37 @@
+# TRACE.ai compliance rules — hot-reloadable.
+# Edit this file and save; the engine picks up changes within ~5s.
+# References:
+#   - PMLA 2002 + PMLA Rules 2005
+#   - RBI Master Direction — KYC Direction, 2016 (updated 2024)
+#   - FIU-IND STR Filing Manual
+
+rules:
+  - id: CTR_THRESHOLD
+    description: Cash Transaction Report — single cash transaction ≥ ₹10L
+    condition: amount >= 1000000 AND channel IN [BRANCH, ATM]
+    action: FLAG_CTR
+    severity: HIGH
+
+  - id: STRUCTURING_DAILY
+    description: Multiple sub-threshold transactions same day from same sender
+    condition: daily_sum_same_sender >= 900000 AND daily_sum_same_sender < 1000000
+    action: FLAG_STRUCTURING
+    severity: HIGH
+
+  - id: DORMANT_ACTIVATION
+    description: Dormant account (≥90 days) high-value reactivation
+    condition: account_dormant_days >= 90 AND amount >= 500000
+    action: FLAG_DORMANT
+    severity: MEDIUM
+
+  - id: KYC_HIGH_RISK
+    description: High-risk KYC customer large transfer
+    condition: kyc_risk_category == HIGH AND amount >= 200000
+    action: FLAG_KYC_REVIEW
+    severity: MEDIUM
+
+  - id: CROSS_BANK_VELOCITY
+    description: Unusual cross-bank large transfer with high velocity
+    condition: sender_bank != receiver_bank AND amount >= 500000 AND velocity_24h >= 5
+    action: FLAG_CROSS_BANK
+    severity: LOW
