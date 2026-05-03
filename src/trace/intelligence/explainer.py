@@ -7,7 +7,6 @@ Compliance officer reviews before any STR is filed.
 
 from __future__ import annotations
 
-
 PROMPT_TEMPLATE = """You are an AML compliance assistant. Given the following alert evidence, write a 4-sentence explanation in plain English. Cite specific accounts, amounts, and timestamps from the evidence. Do NOT invent facts.
 
 EVIDENCE:

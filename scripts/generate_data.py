@@ -15,7 +15,7 @@ def main() -> None:
     parser.add_argument("--num-transactions", type=int, default=100_000)
     parser.add_argument("--out", default="data/raw/")
     args = parser.parse_args()
-    print(f"[scaffold] would generate {args.num_accounts} accounts × {args.num_transactions} txns into {args.out}")
+    print(f"[scaffold] would generate {args.num_accounts} accounts x {args.num_transactions} txns into {args.out}")
 
 
 if __name__ == "__main__":

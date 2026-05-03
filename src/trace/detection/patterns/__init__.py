@@ -2,4 +2,4 @@
 
 from . import circular_flow, dormant_burst, layering, mule_fanin_fanout, structuring
 
-__all__ = ["circular_flow", "layering", "structuring", "mule_fanin_fanout", "dormant_burst"]
+__all__ = ["circular_flow", "dormant_burst", "layering", "mule_fanin_fanout", "structuring"]
