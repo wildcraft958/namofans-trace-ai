@@ -4,7 +4,7 @@ Hackathon team rules. Keep it simple, ship fast, don't break the demo.
 
 ## Branching
 
-- `main` is the deployable branch. All PRs go through CI.
+- `main` is the deployable branch. Run `ruff check .` and `pytest -q` locally before pushing — no GitHub Actions CI is configured.
 - Feature branches: `feat/<short-name>`, `fix/<short-name>`, `docs/<short-name>`.
 - Keep branches short-lived. Aim for <2 days from branch to merge.
 

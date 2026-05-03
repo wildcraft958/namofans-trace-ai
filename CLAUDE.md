@@ -56,7 +56,7 @@ docker compose up --build
 - **Imports**: absolute imports inside `trace.*`. Frontend uses relative imports inside `src/`.
 - **Tests**: every detection module gets a unit test; API gets an integration smoke test. Tests use small synthetic graphs, not full AMLSim.
 - **Commits**: small, atomic, conventional-commit style (`feat:`, `fix:`, `docs:`, `test:`). Per global rules: never add Claude as co-author. Never commit `.claude/`, `data/raw/`, secrets.
-- **Branching**: `main` is protected (will require PR + green CI before merge once we set it up). Feature branches off `main`; small PRs.
+- **Branching**: feature branches off `main`; small PRs. Lint and tests run locally before push (no GitHub Actions CI in this repo).
 - **Module boundaries**: detection/intelligence/explainability/api/data/graph are independent. Each ships with a clean public API; no cross-module imports of internals.
 
 ## Module ownership (proposed)
