@@ -1,19 +1,80 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useAlertWebSocket(url: string = "/ws/alerts") {
-  const [alerts, setAlerts] = useState<any[]>([]);
+export interface WsAlert {
+  type: "alert" | "drift_event";
+  alert_id?: string;
+  account_id?: string;
+  risk_level?: string;
+  composite_score?: number;
+  score?: number;
+}
+
+export interface WsDriftEvent {
+  type: "drift_event";
+  account_id: string;
+  score: number;
+  timestamp?: string;
+}
+
+export function useAlertWebSocket(path: string = "/ws/alerts") {
+  const [wsAlerts, setWsAlerts] = useState<WsAlert[]>([]);
+  const [driftEvents, setDriftEvents] = useState<WsDriftEvent[]>([]);
+  const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
-  useEffect(() => {
-    const wsUrl = url.startsWith("ws") ? url : `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}${url}`;
-    const ws = new WebSocket(wsUrl);
+  const retryRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryCountRef = useRef(0);
+
+  const connect = useCallback(() => {
+    const proto = location.protocol === "https:" ? "wss" : "ws";
+    const url = `${proto}://${location.host}${path}`;
+
+    const ws = new WebSocket(url);
     wsRef.current = ws;
+
+    ws.onopen = () => {
+      setConnected(true);
+      retryCountRef.current = 0;
+    };
+
     ws.onmessage = (evt) => {
       try {
-        const alert = JSON.parse(evt.data);
-        setAlerts((prev) => [alert, ...prev].slice(0, 50));
-      } catch {}
+        const payload = JSON.parse(evt.data) as { events: WsAlert[] };
+        const events = payload.events ?? [];
+        for (const ev of events) {
+          if (ev.type === "drift_event") {
+            setDriftEvents((prev) => [
+              { ...ev, timestamp: new Date().toISOString() } as WsDriftEvent,
+              ...prev,
+            ].slice(0, 100));
+          } else {
+            setWsAlerts((prev) => [ev, ...prev].slice(0, 50));
+          }
+        }
+      } catch {
+        // ignore malformed frames
+      }
     };
-    return () => ws.close();
-  }, [url]);
-  return alerts;
+
+    ws.onclose = () => {
+      setConnected(false);
+      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
+      const delay = Math.min(1000 * 2 ** retryCountRef.current, 30_000);
+      retryCountRef.current += 1;
+      retryRef.current = setTimeout(connect, delay);
+    };
+
+    ws.onerror = () => {
+      ws.close();
+    };
+  }, [path]);
+
+  useEffect(() => {
+    connect();
+    return () => {
+      retryRef.current && clearTimeout(retryRef.current);
+      wsRef.current?.close();
+    };
+  }, [connect]);
+
+  return { wsAlerts, driftEvents, connected };
 }

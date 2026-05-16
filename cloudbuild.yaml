@@ -1,0 +1,58 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    id: build
+    args:
+      - build
+      - -t
+      - gcr.io/agrowise-192e3/trace-ai:latest
+      - -t
+      - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
+      - .
+    # Rust compilation and pip installs can take a while
+    timeout: "1200s"
+
+  # Step 2: Push both tags to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    id: push-latest
+    args:
+      - push
+      - gcr.io/agrowise-192e3/trace-ai:latest
+    waitFor:
+      - build
+
+  - name: "gcr.io/cloud-builders/docker"
+    id: push-sha
+    args:
+      - push
+      - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
+    waitFor:
+      - build
+
+  # Step 3: Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    id: deploy
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - trace-ai
+      - --image=gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
+      - --platform=managed
+      - --region=us-central1
+      - --allow-unauthenticated
+      - --memory=2Gi
+      - --cpu=2
+      - --timeout=300
+      - --project=agrowise-192e3
+    waitFor:
+      - push-sha
+
+images:
+  - gcr.io/agrowise-192e3/trace-ai:latest
+  - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  # 30-minute overall build timeout (Rust compile is slow)
+  timeout: "1800s"
