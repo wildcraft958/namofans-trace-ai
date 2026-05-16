@@ -20,6 +20,11 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY compliance_rules.yaml ./
 
+# PYTHONPATH must be set before pip install so the editable install's .pth
+# does not race with stdlib 'trace' module (Python stdlib has trace.py which
+# shadows our package if /app/src isn't prepended to sys.path first).
+ENV PYTHONPATH=/app/src
+
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -e "."
 
