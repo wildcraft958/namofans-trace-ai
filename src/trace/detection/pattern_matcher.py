@@ -18,14 +18,31 @@ from .patterns import (
     structuring,
 )
 
+_PATTERN_SEVERITY = {
+    "circular_flow": 0.90,  # round-tripping is a clear fraud indicator
+    "mule": 0.90,           # fan-in/fan-out is an explicit mule signal
+    "layering": 0.85,       # multi-hop layering is the hallmark of ML
+    "structuring": 0.80,    # sub-threshold splitting is CTR avoidance
+    "dormant_burst": 0.75,  # dormant burst has some legitimate explanations
+}
+
 
 def score_account(g, account_id: str) -> dict:
     """Run all 5 pattern detectors against an account. Return matched typologies + score."""
-    matches = {}
-    matches["circular_flow"] = circular_flow.detect(g, account_id)
-    matches["layering"] = layering.detect(g, account_id)
-    matches["structuring"] = structuring.detect(g, account_id)
-    matches["mule"] = mule_fanin_fanout.detect(g, account_id)
-    matches["dormant_burst"] = dormant_burst.detect(g, account_id)
-    pattern_score = sum(1 for v in matches.values() if v) / len(matches)
+    matches = {
+        "circular_flow": circular_flow.detect(g, account_id),
+        "layering": layering.detect(g, account_id),
+        "structuring": structuring.detect(g, account_id),
+        "mule": mule_fanin_fanout.detect(g, account_id),
+        "dormant_burst": dormant_burst.detect(g, account_id),
+    }
+    fired = [k for k, v in matches.items() if v]
+    if not fired:
+        pattern_score = 0.0
+    else:
+        # Driven by the highest-severity pattern detected;
+        # each additional confirmed pattern adds a 0.05 confirmation boost.
+        base = max(_PATTERN_SEVERITY[p] for p in fired)
+        boost = 0.05 * (len(fired) - 1)
+        pattern_score = min(1.0, base + boost)
     return {"score": pattern_score, "matches": matches}

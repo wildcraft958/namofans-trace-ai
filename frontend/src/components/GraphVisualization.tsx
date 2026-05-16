@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import ForceGraph3D from "react-force-graph-3d";
 import * as THREE from "three";
 import { useGraphData } from "../hooks/useGraphData";
@@ -19,6 +19,18 @@ interface Props {
 export default function GraphVisualization({ focusAccountId, onNodeClick }: Props) {
   const { data, loading } = useGraphData(focusAccountId ?? undefined);
   const graphRef = useRef<any>(null);
+  const fittedRef = useRef(false);
+
+  const handleEngineStop = useCallback(() => {
+    if (!fittedRef.current && graphRef.current) {
+      graphRef.current.zoomToFit(700, 80);
+      fittedRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    fittedRef.current = false;
+  }, [data?.nodes.length]);
 
   const nodeColor = useCallback((node: any) => {
     return RISK_COLOR[node.risk_level as string] ?? RISK_COLOR.UNKNOWN;
@@ -201,6 +213,7 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
           showNavInfo={false}
           warmupTicks={30}
           cooldownTime={3000}
+          onEngineStop={handleEngineStop}
         />
       )}
     </div>

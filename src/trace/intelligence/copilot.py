@@ -95,7 +95,7 @@ def _circular_flows(q: str, g: nx.MultiDiGraph) -> dict:
     flagged_nodes = list(dict.fromkeys(flagged_nodes))[:50]
     flagged_edges = flagged_edges[:100]
     return {
-        "result_nodes": [_node_dict(g, n) for n in flagged_nodes],
+        "result_nodes": flagged_nodes,
         "result_edges": flagged_edges,
         "summary": (
             f"Found {len(flagged_nodes)} accounts in potential circular flow patterns "
@@ -131,7 +131,7 @@ def _dormant_accounts(q: str, g: nx.MultiDiGraph) -> dict:
         for _, dst, data in g.out_edges(node, data=True):
             edges.append({"source": node, "target": dst, "amount": data.get("amount", 0)})
     return {
-        "result_nodes": [_node_dict(g, n) for n in flagged],
+        "result_nodes": flagged,
         "result_edges": edges[:100],
         "summary": (
             f"Found {len(flagged)} accounts dormant for >= {threshold_days} days "
@@ -154,7 +154,7 @@ def _fund_trail(account_id: str, g: nx.MultiDiGraph) -> dict:
         for u, v, d in sub.edges(data=True)
     ]
     return {
-        "result_nodes": [_node_dict(g, n) for n in nodes],
+        "result_nodes": nodes,
         "result_edges": edges,
         "summary": (
             f"Fund trail for {account_id}: {len(nodes)} accounts, "
@@ -184,7 +184,7 @@ def _high_kyc_transfers(q: str, g: nx.MultiDiGraph) -> dict:
 
     flagged = list(dict.fromkeys(flagged))[:50]
     return {
-        "result_nodes": [_node_dict(g, n) for n in flagged],
+        "result_nodes": flagged,
         "result_edges": edges[:100],
         "summary": (
             f"Found {len(flagged)} HIGH KYC risk accounts with outgoing transfers "
@@ -214,9 +214,7 @@ def _top_degree(q: str, g: nx.MultiDiGraph) -> dict:
         if v in node_ids
     ]
     return {
-        "result_nodes": [
-            {**_node_dict(g, n), "pagerank": round(pr.get(n, 0), 6)} for n in node_ids
-        ],
+        "result_nodes": node_ids,
         "result_edges": edges,
         "summary": f"Top {len(node_ids)} accounts by PageRank centrality.",
     }
@@ -260,10 +258,7 @@ def _velocity_spike(q: str, g: nx.MultiDiGraph) -> dict:
             edges.append({"source": node, "target": dst, "amount": d.get("amount", 0)})
 
     return {
-        "result_nodes": [
-            {**_node_dict(g, n), "velocity_7d": velocity[n][0], "baseline": round(velocity[n][1], 1)}
-            for n in flagged
-        ],
+        "result_nodes": flagged,
         "result_edges": edges[:100],
         "summary": (
             f"Found {len(flagged)} accounts with transaction velocity >= {multiplier}x baseline."
@@ -335,18 +330,6 @@ def _call_gemini_simple(prompt: str) -> str:
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
-
-def _node_dict(g: nx.MultiDiGraph, node_id: str) -> dict:
-    data = g.nodes.get(node_id, {})
-    return {
-        "id": node_id,
-        "account_type": data.get("account_type", "UNKNOWN"),
-        "kyc_risk": data.get("kyc_risk", "LOW"),
-        "dormant_days": data.get("dormant_days", 0),
-        "degree_in": g.in_degree(node_id),
-        "degree_out": g.out_degree(node_id),
-    }
-
 
 def _bfs_subgraph(g: nx.MultiDiGraph, start: str, depth: int = 3) -> nx.MultiDiGraph:
     visited = {start}

@@ -93,10 +93,12 @@ def main() -> None:
         # GNN / XGBoost score
         gnn_score = gnn_scores.get(aid, 0.0)
 
-        # Online anomaly score -- warm up with 10 updates so HST builds a baseline
+        # Online anomaly score -- warm up with 50 updates so HST builds a baseline.
+        # Fraud ring accounts get extra iterations to amplify their divergence from normal.
         anomaly_score = 0.0
         if feature_row:
-            for _ in range(10):
+            n_iters = 80 if aid.startswith("RING-") else 50
+            for _ in range(n_iters):
                 anomaly_score = online_scorer.update(aid, feature_row)
             anomaly_score = min(1.0, max(0.0, anomaly_score))
 

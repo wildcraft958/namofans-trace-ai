@@ -84,14 +84,14 @@ def graph_to_viz(g: nx.MultiDiGraph, risk_map: dict[str, str] | None = None, lim
             if len(links) >= limit * 3:
                 break
 
+    flagged_count = sum(1 for v in risk_map.values() if v != "LOW")
     return {
         "nodes": nodes,
         "links": links,
         "summary": {
             "total_nodes": g.number_of_nodes(),
             "total_edges": g.number_of_edges(),
-            "displayed_nodes": len(nodes),
-            "displayed_edges": len(links),
+            "flagged_nodes": flagged_count,
         },
     }
 
