@@ -1,31 +1,21 @@
 steps:
   # Step 1: Build the Docker image
+  # Rust compilation (~10 min) + npm build + seed_demo (~3 min)
   - name: "gcr.io/cloud-builders/docker"
     id: build
     args:
       - build
       - -t
       - gcr.io/agrowise-192e3/trace-ai:latest
-      - -t
-      - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
       - .
-    # Rust compilation and pip installs can take a while
     timeout: "1200s"
 
-  # Step 2: Push both tags to Container Registry
+  # Step 2: Push to Container Registry
   - name: "gcr.io/cloud-builders/docker"
-    id: push-latest
+    id: push
     args:
       - push
       - gcr.io/agrowise-192e3/trace-ai:latest
-    waitFor:
-      - build
-
-  - name: "gcr.io/cloud-builders/docker"
-    id: push-sha
-    args:
-      - push
-      - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
     waitFor:
       - build
 
@@ -37,22 +27,23 @@ steps:
       - run
       - deploy
       - trace-ai
-      - --image=gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
+      - --image=gcr.io/agrowise-192e3/trace-ai:latest
       - --platform=managed
       - --region=us-central1
       - --allow-unauthenticated
       - --memory=2Gi
       - --cpu=2
       - --timeout=300
+      - --set-env-vars=PYTHONUNBUFFERED=1
       - --project=agrowise-192e3
     waitFor:
-      - push-sha
+      - push
 
 images:
   - gcr.io/agrowise-192e3/trace-ai:latest
-  - gcr.io/agrowise-192e3/trace-ai:$COMMIT_SHA
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  # 30-minute overall build timeout (Rust compile is slow)
-  timeout: "1800s"
+
+# 30-minute overall timeout (Rust compile is slow)
+timeout: "1800s"
