@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-import pandas as pd
-
+from trace.data.feature_engineering import FEATURE_COLS, build_feature_matrix, extract_features
 from trace.data.generator import generate
 from trace.graph.builder import build_graph
-from trace.data.feature_engineering import extract_features, build_feature_matrix, FEATURE_COLS
+
+import pandas as pd
+import pytest
 
 
 @pytest.fixture(scope="module")

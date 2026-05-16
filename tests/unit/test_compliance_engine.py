@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import time
-from pathlib import Path
+from trace.detection.compliance_engine import ComplianceEngine
 
 import pytest
-
-from trace.detection.compliance_engine import ComplianceEngine
 
 
 @pytest.fixture

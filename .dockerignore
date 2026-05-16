@@ -24,8 +24,9 @@ data/processed/
 .env.*
 google_service_key.json
 
-# Frontend (deployed separately or served by a CDN)
-frontend/
+# Frontend build artifacts (not the source — source is needed for Docker build)
+frontend/node_modules/
+frontend/dist/
 
 # Claude Code tooling
 .claude/
