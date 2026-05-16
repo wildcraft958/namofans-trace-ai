@@ -12,10 +12,11 @@ dependencies = [
     "networkx>=3.2",
     "river>=0.21",
     "scikit-learn>=1.4",
-    "xgboost>=2.0",
+    "xgboost>=2.0,<3.0",
     "shap>=0.45",
     "numpy>=1.26",
     "pandas>=2.2",
+    "matplotlib>=3.8",
 
     # Backend
     "fastapi>=0.110",
@@ -27,6 +28,7 @@ dependencies = [
 
     # Intelligence
     "google-generativeai>=0.8",
+    "google-cloud-aiplatform>=1.50",
     "reportlab>=3.6",
 
     # Data generation
