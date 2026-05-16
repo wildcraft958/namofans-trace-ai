@@ -104,7 +104,7 @@ export default function DriftTimeline() {
   const injectPattern = async () => {
     setInjecting(true);
     try {
-      await api.post("/demo/inject-pattern");
+      await fetch("/demo/inject-pattern", { method: "POST" });
       setLastInjected(new Date().toLocaleTimeString("en-IN"));
     } finally {
       setInjecting(false);

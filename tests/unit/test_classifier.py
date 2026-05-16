@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import pytest
-import pandas as pd
-import numpy as np
-
-from trace.data.generator import generate
-from trace.graph.builder import build_graph
 from trace.data.feature_engineering import build_feature_matrix
-from trace.detection.gnn_classifier import train, score, FEATURE_COLS
+from trace.data.generator import generate
+from trace.detection.gnn_classifier import score, train
+from trace.graph.builder import build_graph
+
+import numpy as np
+import pandas as pd
+import pytest
 
 
 @pytest.fixture(scope="module")
@@ -28,7 +28,7 @@ def trained_model():
 
 class TestTrain:
     def test_returns_model_scaler_auc(self, trained_model):
-        model, scaler, df, labels, auc = trained_model
+        model, scaler, _df, _labels, auc = trained_model
         assert model is not None
         assert scaler is not None
         assert 0.0 <= auc <= 1.0
