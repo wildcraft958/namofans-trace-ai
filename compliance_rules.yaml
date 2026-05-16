@@ -1,37 +1,64 @@
-# TRACE.ai compliance rules — hot-reloadable.
-# Edit this file and save; the engine picks up changes within ~5s.
+# TRACE.ai compliance rules -- hot-reloadable via watchdog.
+# Edit and save; changes take effect within ~5 seconds (no restart needed).
 # References:
-#   - PMLA 2002 + PMLA Rules 2005
-#   - RBI Master Direction — KYC Direction, 2016 (updated 2024)
-#   - FIU-IND STR Filing Manual
+#   - PMLA 2002 + PMLA (Amendment) Act 2012
+#   - RBI Master Direction on KYC, 2016 (updated 2024)
+#   - FIU-IND STR Filing Manual v3.2
+#
+# Rule format:
+#   id: RULE_ID
+#   description: Human-readable description
+#   field: transaction field to check  (amount | kyc_risk | channel | dormant_days | kyc_risk_score)
+#   op: gt | lt | gte | lte | eq | in
+#   value: comparison value
+#   action: FLAG | ALERT | FREEZE
+#   severity: HIGH | MEDIUM | LOW
 
 rules:
-  - id: CTR_THRESHOLD
-    description: Cash Transaction Report — single cash transaction ≥ ₹10L
-    condition: amount >= 1000000 AND channel IN [BRANCH, ATM]
-    action: FLAG_CTR
+  - id: HIGH_VALUE_SINGLE_TXN
+    description: "Single transaction >= Rs 10L -- mandatory CTR per RBI guidelines"
+    field: amount
+    op: gte
+    value: 1000000
+    action: FLAG
     severity: HIGH
 
-  - id: STRUCTURING_DAILY
-    description: Multiple sub-threshold transactions same day from same sender
-    condition: daily_sum_same_sender >= 900000 AND daily_sum_same_sender < 1000000
-    action: FLAG_STRUCTURING
+  - id: STRUCTURING_THRESHOLD
+    description: "Transaction 80-99% of Rs 10L CTR threshold (structuring indicator)"
+    field: amount
+    op: gte
+    value: 800000
+    action: ALERT
     severity: HIGH
 
-  - id: DORMANT_ACTIVATION
-    description: Dormant account (≥90 days) high-value reactivation
-    condition: account_dormant_days >= 90 AND amount >= 500000
-    action: FLAG_DORMANT
+  - id: KYC_HIGH_RISK_ACCOUNT
+    description: "Account classified as HIGH KYC risk -- enhanced due diligence required"
+    field: kyc_risk
+    op: eq
+    value: HIGH
+    action: ALERT
     severity: MEDIUM
 
-  - id: KYC_HIGH_RISK
-    description: High-risk KYC customer large transfer
-    condition: kyc_risk_category == HIGH AND amount >= 200000
-    action: FLAG_KYC_REVIEW
+  - id: DORMANT_HIGH_VALUE
+    description: "Dormant account (>=90 days) with high-value transaction"
+    field: dormant_days
+    op: gte
+    value: 90
+    action: FLAG
     severity: MEDIUM
 
-  - id: CROSS_BANK_VELOCITY
-    description: Unusual cross-bank large transfer with high velocity
-    condition: sender_bank != receiver_bank AND amount >= 500000 AND velocity_24h >= 5
-    action: FLAG_CROSS_BANK
+  - id: ATM_LARGE_CASH
+    description: "Large ATM withdrawal -- potential smurfing indicator"
+    field: channel
+    op: eq
+    value: ATM
+    action: ALERT
+    severity: LOW
+
+  - id: RTGS_HIGH_AMOUNT
+    description: "RTGS transaction >= Rs 5L -- STR consideration threshold"
+    field: amount
+    op: gte
+    value: 500000
+    action: FLAG
     severity: LOW
