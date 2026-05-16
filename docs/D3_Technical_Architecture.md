@@ -1,7 +1,7 @@
-# TRACE.ai — Technical Architecture
+# TRACE.ai - Technical Architecture
 
 **iDEA Hackathon 2.0 | PSBs Hackathon Series 2026**
-**Team NamoFans | PS3 — Tracking of Funds within Bank for Fraud Detection**
+**Team NamoFans | PS3 - Tracking of Funds within Bank for Fraud Detection**
 
 ---
 
@@ -11,13 +11,13 @@ TRACE.ai is structured as four independent layers. Each layer has a clean public
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  LAYER 0 — DATA INGESTION                                   │
+│  LAYER 0 - DATA INGESTION                                   │
 │  CBS / NEFT / RTGS / UPI / IMPS feeds  →  Pandas DataFrame │
 │  IBM AMLSim generator (synthetic data for prototype)        │
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│  LAYER 1 — GRAPH ENGINE                                     │
+│  LAYER 1 - GRAPH ENGINE                                     │
 │  NetworkX MultiDiGraph                                       │
 │  Nodes: accounts (KYC risk, account type, dormant_days)     │
 │  Edges: transactions (amount, timestamp, channel)            │
@@ -26,7 +26,7 @@ TRACE.ai is structured as four independent layers. Each layer has a clean public
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│  LAYER 2 — DETECTION ENGINE (four parallel signals)         │
+│  LAYER 2 - DETECTION ENGINE (four parallel signals)         │
 │                                                             │
 │  A. Pattern Matcher     B. Graph Classifier                  │
 │     5 AML typologies       XGBoost on 11 graph features     │
@@ -43,7 +43,7 @@ TRACE.ai is structured as four independent layers. Each layer has a clean public
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│  LAYER 3 — INTELLIGENCE                                     │
+│  LAYER 3 - INTELLIGENCE                                     │
 │  F. SHAP Explainability    per-alert feature attributions   │
 │  G. Gemini LLM Explainer   grounded evidence → English      │
 │  H. NL Investigation Copilot  6 dispatchers + Gemini intent │
@@ -52,7 +52,7 @@ TRACE.ai is structured as four independent layers. Each layer has a clean public
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
-│  LAYER 4 — DELIVERY                                         │
+│  LAYER 4 - DELIVERY                                         │
 │  FastAPI (REST + WebSocket)  →  React 18 Dashboard          │
 │  3D Force Graph (Three.js)      Alert Queue (live)          │
 │  SHAP Explainability Card        NL Copilot Panel           │
@@ -129,7 +129,7 @@ src/trace/
 
 ## Key Architecture Decisions
 
-**XGBoost instead of full GNN.** The Phase 1 PPT described a Temporal GNN (ChronoWave-GNN). For the prototype, XGBoost on graph-structural features is the correct approach — validated explicitly by the hackathon sample D3 document. PyTorch Geometric TGN requires significantly more training data and compute than a POC allows. SHAP TreeExplainer on XGBoost is functionally equivalent to GNNExplainer for the purposes of feature attribution. This is disclosed honestly in MODEL_CARD.md.
+**XGBoost instead of full GNN.** The Phase 1 PPT described a Temporal GNN (ChronoWave-GNN). For the prototype, XGBoost on graph-structural features is the correct approach - validated explicitly by the hackathon sample D3 document. PyTorch Geometric TGN requires significantly more training data and compute than a POC allows. SHAP TreeExplainer on XGBoost is functionally equivalent to GNNExplainer for the purposes of feature attribution. This is disclosed honestly in MODEL_CARD.md.
 
 **NetworkX instead of Neo4j.** For 500-5000 accounts, NetworkX is adequate and eliminates an external database dependency. Neo4j GDS is the targeted v2 upgrade for production-scale (millions of accounts). This is documented in DECISIONS.md ADR-0003.
 
@@ -181,7 +181,7 @@ At runtime (FastAPI startup):
 | Component | Platform | URL |
 |---|---|---|
 | Full stack (API + Dashboard) | GCP Cloud Run (us-central1) | https://trace-ai-4xnj5ovp4a-uc.a.run.app |
-| Container Registry | GCR (gcr.io/agrowise-192e3/trace-ai) | — |
+| Container Registry | GCR (gcr.io/agrowise-192e3/trace-ai) | - |
 | Rebuild | `gcloud builds submit --config cloudbuild.yaml .` | ~11 min (Rust + npm) |
 
 **Resource allocation:** 2 vCPU, 2 GiB RAM, 300s request timeout, allow unauthenticated.

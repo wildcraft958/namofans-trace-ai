@@ -1,4 +1,4 @@
-# TRACE.ai — Transaction Risk Analysis & Compliance Engine
+# TRACE.ai: Transaction Risk Analysis and Compliance Engine
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Cloud_Run-4CAF50?style=flat-square&logo=googlecloud)](https://trace-ai-4xnj5ovp4a-uc.a.run.app)
 [![Tests](https://img.shields.io/badge/Tests-42_passing-brightgreen?style=flat-square&logo=pytest)](tests/)
@@ -6,7 +6,7 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](frontend/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-> **iDEA Hackathon 2.0 (PSBs Hackathon Series 2026) · Union Bank of India · PS3 — Tracking of Funds within Bank for Fraud Detection**
+> **iDEA Hackathon 2.0 (PSBs Hackathon Series 2026) · Union Bank of India · PS3 - Tracking of Funds within Bank for Fraud Detection**
 > Team **NamoFans** · IIT Kharagpur · Phase 1 Shortlisted ✓
 
 **Graph-powered fund flow intelligence for AML and compliance.** Models every banking transaction as an edge in a dynamic directed graph, runs four detection engines in parallel, and auto-generates FIU-IND compliant Suspicious Transaction Reports in under 5 minutes.
@@ -15,7 +15,7 @@
 
 ## The Problem
 
-Indian banks lost **₹71,543 Cr** to fraud in FY 2024-25 (RBI Annual Report). Rule-based AML systems generate **95%+ false positives** — investigators spend their day dismissing noise instead of investigating real threats. Sophisticated fraud (multi-hop layering, circular round-trips, structuring) is **invisible to single-transaction rules**. Manual STR preparation takes **4–6 hours per case**.
+Indian banks lost **₹71,543 Cr** to fraud in FY 2024-25 (RBI Annual Report). Rule-based AML systems generate **95%+ false positives** - investigators spend their day dismissing noise instead of investigating real threats. Sophisticated fraud (multi-hop layering, circular round-trips, structuring) is **invisible to single-transaction rules**. Manual STR preparation takes **4-6 hours per case**.
 
 ---
 
@@ -35,7 +35,7 @@ The dashboard loads with 8 pre-seeded alerts across a 542-node, 5049-edge transa
 | 2 | **XGBoost Classifier** | 11 graph-structural features (PageRank, betweenness, velocity, KYC risk); AUC > 0.99 |
 | 3 | **Online Anomaly Scorer** | River HalfSpaceTrees + ADWIN drift; per-account streaming baselines, zero batch retraining |
 | 4 | **YAML Compliance Engine** | Hot-reloadable RBI/PMLA/FIU-IND rules; new circulars take effect without restarts |
-| 5 | **SHAP Explainability** | TreeExplainer attribution on every flag — no black-box alerts |
+| 5 | **SHAP Explainability** | TreeExplainer attribution on every flag - no black-box alerts |
 | 6 | **Gemini LLM Explainer** | Grounded evidence → plain-English explanation per alert |
 | 7 | **NL Investigation Copilot** | Ask in English → graph query results; six pattern dispatchers + Gemini for freeform |
 | 8 | **Auto-STR Generator** | One click → FIU-IND 8-section A4 PDF: fund trail, risk breakdown, AI narrative |
@@ -78,7 +78,7 @@ Thresholds: CRITICAL ≥ 0.85 · HIGH ≥ 0.70 · MEDIUM ≥ 0.50
 
 ## Quick Start
 
-**Prerequisites:** Python 3.10+, Node.js 18+, Rust (for River — `curl https://sh.rustup.rs -sSf | sh`)
+**Prerequisites:** Python 3.10+, Node.js 18+, Rust (for River - `curl https://sh.rustup.rs -sSf | sh`)
 
 ```bash
 # Install
@@ -139,7 +139,7 @@ frontend/src/
 
 scripts/               seed_demo.py · run_demo.py
 tests/                 42 tests (unit + integration)
-docs/                  D1_Problem_Solution_Brief · D3_Technical_Architecture · PPT PDF
+docs/                  D1_Problem_Solution_Brief · D3_Technical_Architecture
 compliance_rules.yaml  Hot-reloadable RBI/PMLA/FIU-IND rules
 Dockerfile             Single-container build (Python + Node.js + Rust)
 cloudbuild.yaml        GCP Cloud Build pipeline
@@ -153,7 +153,7 @@ cloudbuild.yaml        GCP Cloud Build pipeline
 |---|---|
 | Graph | NetworkX MultiDiGraph |
 | ML | XGBoost 2.1.4 + SHAP TreeExplainer |
-| Online ML | River 0.23.0 — HalfSpaceTrees + ADWIN |
+| Online ML | River 0.23.0 - HalfSpaceTrees + ADWIN |
 | Compliance | YAML + watchdog hot-reload |
 | LLM | Gemini 2.5 Flash via Vertex AI (GCP) |
 | PDF | ReportLab (FIU-IND format) |
@@ -180,8 +180,8 @@ cloudbuild.yaml        GCP Cloud Build pipeline
 
 ## Limitations
 
-- Trained on IBM AMLSim synthetic data — real CBS integration is a Phase 3 goal
-- XGBoost used instead of full Temporal GNN (ChronoWave-GNN as designed in Phase 1) — validated POC approach; see `MODEL_CARD.md`
+- Trained on IBM AMLSim synthetic data - real CBS integration is a Phase 3 goal
+- XGBoost used instead of full Temporal GNN (ChronoWave-GNN as designed in Phase 1) - validated POC approach; see `MODEL_CARD.md`
 - Gemini explanations are pre-cached at seed time; live LLM calls fall back to templates if quota is exceeded
 
 ---
