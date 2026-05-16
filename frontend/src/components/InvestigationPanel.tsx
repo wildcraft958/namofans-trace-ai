@@ -34,7 +34,7 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
     setError(null);
     setResult(null);
     try {
-      const r = await api.post<InvestigateResult>("/investigate", { query: q });
+      const r = await api.post<InvestigateResult>("/investigate", { nl_query: q });
       setResult(r.data);
       if (r.data.result_nodes?.length > 0) {
         onSubgraphFocus?.(r.data.result_nodes);
