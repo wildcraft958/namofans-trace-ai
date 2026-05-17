@@ -65,11 +65,12 @@ function CodeWindow() {
 
   const highlight = (raw: string) =>
     raw
+      .replace(/("[^"]*")/g, '\x00STR\x00$1\x00/STR\x00')
       .replace(/\b(def|if|return|raise)\b/g, '<span style="color:#fb923c">$1</span>')
       .replace(/\b(pattern_matcher|online_scorer|risk_fusion|audit_log)\b/g,
                '<span style="color:#c084fc">$1</span>')
-      .replace(/("[^"]*")/g, '<span style="color:#86efac">$1</span>')
-      .replace(/\b(0\.\d+)\b/g, '<span style="color:#7dd3fc">$1</span>');
+      .replace(/\b(0\.\d+)\b/g, '<span style="color:#7dd3fc">$1</span>')
+      .replace(/\x00STR\x00("[^"]*")\x00\/STR\x00/g, '<span style="color:#86efac">$1</span>');
 
   return (
     <div style={{
@@ -95,11 +96,12 @@ function CodeWindow() {
       </div>
       {/* code body */}
       <div style={{
-        padding: "24px 0 24px",
-        fontFamily: "'Fira Code', 'Menlo', monospace",
+        padding: "20px 0",
+        fontFamily: "'Fira Code', 'Menlo', 'Consolas', monospace",
         fontSize: 13,
-        lineHeight: 1.7,
+        lineHeight: 1.75,
         minHeight: 240,
+        overflowX: "auto",
       }}>
         {lines.map((line, idx) => {
           const isRed = idx === 3;
@@ -138,6 +140,8 @@ export default function Landing() {
   return (
     <>
       <style>{`
+        html, body { margin: 0; padding: 0; background: #0c0700; }
+        * { box-sizing: border-box; }
         @keyframes float {
           0%,100% { transform: translateY(0); }
           50%      { transform: translateY(-12px); }

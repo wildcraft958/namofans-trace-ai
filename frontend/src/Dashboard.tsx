@@ -36,12 +36,13 @@ export default function Dashboard() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
         }
+        html, body { margin: 0; padding: 0; background: #0b0d12; }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #0b0d12; }
         ::-webkit-scrollbar-thumb { background: #1c1f2a; border-radius: 4px; }
-        input:focus { border-color: #7aa2ff !important; }
+        input:focus { border-color: #f97316 !important; }
       `}</style>
 
       <div
