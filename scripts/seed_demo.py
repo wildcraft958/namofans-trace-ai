@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
@@ -172,18 +172,17 @@ def main() -> None:
     print(f"      Written to {_ALERTS_OUT}")
 
     # ── 6.5 Pre-seed drift events ───────────────────────────────
-    # Drain ADWIN events accumulated during warm-up so DriftTimeline
-    # has historical data on first page load instead of showing "Waiting…"
+    # Drain ADWIN events accumulated during warm-up, then guarantee
+    # at least 20 historical events so DriftTimeline chart is always populated.
     drift_events = online_scorer.drain_drift_events()
-    if drift_events:
-        from trace.intelligence.drift_dashboard import record_drift_event
-        for ev in drift_events:
-            record_drift_event(
-                ev["account_id"], ev["score_before"], ev["score_after"], ev["timestamp"]
-            )
-        print(f"      Pre-seeded {len(drift_events)} drift events to drift_events.json")
-    else:
-        print("      No ADWIN drift events accumulated during warm-up")
+    from trace.intelligence.drift_dashboard import record_drift_event
+    for ev in drift_events:
+        record_drift_event(
+            ev["account_id"], ev["score_before"], ev["score_after"], ev["timestamp"]
+        )
+    print(f"      Drained {len(drift_events)} ADWIN drift events")
+    _seed_drift_history()
+    print("      Drift history seeded (20 events over 4-hour window)")
 
     # ── 7. Pre-cache Gemini explanations ────────────────────────
     print("[7/7] Pre-caching LLM explanations...")
@@ -196,6 +195,51 @@ def main() -> None:
 
     print("\nDone! Run: uvicorn trace.api.main:app --reload")
     print(f"  Alerts: {len(alerts)} | Graph: {g.number_of_nodes()} nodes")
+
+
+def _seed_drift_history() -> None:
+    """Write 20 synthetic drift events so DriftTimeline always shows a rich chart."""
+    import json
+    import random as _rand
+    from trace.intelligence.drift_dashboard import record_drift_event
+
+    events_path = Path("data/processed/drift_events.json")
+    try:
+        existing_count = len(json.loads(events_path.read_text())) if events_path.exists() else 0
+    except Exception:
+        existing_count = 0
+
+    needed = max(0, 20 - existing_count)
+    if needed == 0:
+        return
+
+    ring_pool = (
+        [f"RING-CF-{j:02d}" for j in range(5)]
+        + [f"RING-LY-{j:02d}" for j in range(4)]
+        + ["RING-MU-00", "RING-DB-00"]
+        + [f"RING-CF2-{j:02d}" for j in range(5)]
+        + ["RING-MU2-00", "RING-LY2-00", "RING-LY2-01"]
+    )
+
+    now = datetime.now(timezone.utc)
+    rng = _rand.Random(99)
+    total = 20
+    start_idx = total - needed
+
+    for i in range(start_idx, total):
+        ago_minutes = int((total - i) * (240 / total))
+        ts = now - timedelta(minutes=ago_minutes)
+        acc = rng.choice(ring_pool)
+        if rng.random() > 0.35:
+            # Drift event: large score jump
+            score_before = round(rng.uniform(0.04, 0.28), 4)
+            score_after = round(rng.uniform(0.65, 0.96), 4)
+        else:
+            # Normal high-risk tick: no significant shift
+            base = round(rng.uniform(0.50, 0.72), 4)
+            score_before = base
+            score_after = round(base + rng.uniform(-0.08, 0.12), 4)
+        record_drift_event(acc, score_before, score_after, ts.isoformat())
 
 
 def _get_top_transactions(g, account_id: str, n: int = 5) -> list[dict]:
