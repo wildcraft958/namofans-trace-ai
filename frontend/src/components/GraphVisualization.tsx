@@ -23,20 +23,6 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
 
   const handleEngineStop = useCallback(() => {
     if (!fittedRef.current && graphRef.current) {
-      // Point camera at the actual node centroid before zooming, so the
-      // sphere appears centered regardless of where D3 positioned it in world space.
-      const { nodes } = graphRef.current.graphData() as { nodes: any[] };
-      if (nodes.length > 0) {
-        const cx = nodes.reduce((s: number, n: any) => s + (n.x ?? 0), 0) / nodes.length;
-        const cy = nodes.reduce((s: number, n: any) => s + (n.y ?? 0), 0) / nodes.length;
-        const cz = nodes.reduce((s: number, n: any) => s + (n.z ?? 0), 0) / nodes.length;
-        const camZ = cz + (graphRef.current.camera().position.z - cz) || 500;
-        graphRef.current.cameraPosition(
-          { x: cx, y: cy, z: camZ },
-          { x: cx, y: cy, z: cz },
-          0
-        );
-      }
       graphRef.current.zoomToFit(800, 60);
       fittedRef.current = true;
     }
