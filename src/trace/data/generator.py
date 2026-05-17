@@ -203,6 +203,40 @@ def generate(
         add_txn(db_src, r, 800_000.0,
                 t0 + timedelta(hours=j + 1, minutes=rng.randint(0, 45)), "IMPS", "dormant_burst")
 
+    # ── Fraud ring 6: Second mule cluster (larger, cross-branch) ─────────────
+    mu2_agg = "RING-MU2-00"
+    mu2_in = [f"RING-MU2-{j:02d}" for j in range(1, 16)]   # 15 fan-in
+    mu2_out = [f"RING-MU2-{j:02d}" for j in range(16, 25)] # 9 fan-out
+    for a in [mu2_agg, *mu2_in, *mu2_out]:
+        add_account(a)
+    t0 = base + timedelta(days=52)
+    for s in mu2_in:
+        add_txn(s, mu2_agg, float(rng.randint(150_000, 400_000)),
+                t0 + timedelta(hours=rng.randint(0, 8)), _channel(rng), "mule")
+    for r in mu2_out:
+        add_txn(mu2_agg, r, float(rng.randint(500_000, 800_000)),
+                t0 + timedelta(hours=rng.randint(10, 20)), _channel(rng), "mule")
+
+    # ── Fraud ring 7: Deep layering chain (8 hops) ────────────────────────────
+    ly2 = [f"RING-LY2-{j:02d}" for j in range(9)]
+    for a in ly2:
+        add_account(a)
+    t0 = base + timedelta(days=15)
+    ly2_amounts = [5_000_000, 3_500_000, 2_400_000, 1_700_000, 1_200_000, 850_000, 590_000, 410_000]
+    for j in range(8):
+        add_txn(ly2[j], ly2[j + 1], float(ly2_amounts[j]),
+                t0 + timedelta(hours=j * 6), "RTGS", "layering")
+
+    # ── Fraud ring 8: High-value circular flow (7-node, ₹25L each) ───────────
+    cf2 = [f"RING-CF2-{j:02d}" for j in range(7)]
+    for a in cf2:
+        add_account(a)
+    t0 = base + timedelta(days=70)
+    for j in range(7):
+        for _ in range(2):
+            add_txn(cf2[j], cf2[(j + 1) % 7], 2_500_000.0,
+                    t0 + timedelta(hours=rng.randint(0, 72)), "RTGS", "circular_flow")
+
     # ── Write CSV if requested ────────────────────────────────────────────────
     if output_dir:
         output_dir = Path(output_dir)

@@ -40,10 +40,10 @@ def main() -> None:
     print("=" * 60)
 
     # ── 1. Generate synthetic data ──────────────────────────────
-    print("\n[1/7] Generating synthetic data (500 accounts, 5000 txns)...")
+    print("\n[1/7] Generating synthetic data (1500 accounts, 20000 txns, 8 fraud rings)...")
     accounts, transactions = generate(
-        num_accounts=500,
-        num_transactions=5_000,
+        num_accounts=1500,
+        num_transactions=20_000,
         seed=42,
         output_dir=Path("data/sample"),
     )
@@ -93,13 +93,21 @@ def main() -> None:
         # GNN / XGBoost score
         gnn_score = gnn_scores.get(aid, 0.0)
 
-        # Online anomaly score -- warm up with 50 updates so HST builds a baseline.
-        # Fraud ring accounts get extra iterations to amplify their divergence from normal.
+        # Online anomaly score -- warm up so HST builds a reliable baseline.
+        # Fraud ring accounts get 120 iterations: first 80 with normal features
+        # to establish baseline, then 40 with actual (anomalous) features so
+        # ADWIN detects the shift and generates pre-seeded drift events.
         anomaly_score = 0.0
         if feature_row:
-            n_iters = 80 if aid.startswith("RING-") else 50
-            for _ in range(n_iters):
-                anomaly_score = online_scorer.update(aid, feature_row)
+            if aid.startswith("RING-"):
+                normal_row = {k: min(v, 1.0) for k, v in feature_row.items()}
+                for _ in range(80):
+                    online_scorer.update(aid, normal_row)
+                for _ in range(40):
+                    anomaly_score = online_scorer.update(aid, feature_row)
+            else:
+                for _ in range(80):
+                    anomaly_score = online_scorer.update(aid, feature_row)
             anomaly_score = min(1.0, max(0.0, anomaly_score))
 
         # Compliance score based on per-transaction evaluation
@@ -162,6 +170,20 @@ def main() -> None:
     _ALERTS_OUT.parent.mkdir(parents=True, exist_ok=True)
     _ALERTS_OUT.write_text(json.dumps(alerts, indent=2, default=str))
     print(f"      Written to {_ALERTS_OUT}")
+
+    # ── 6.5 Pre-seed drift events ───────────────────────────────
+    # Drain ADWIN events accumulated during warm-up so DriftTimeline
+    # has historical data on first page load instead of showing "Waiting…"
+    drift_events = online_scorer.drain_drift_events()
+    if drift_events:
+        from trace.intelligence.drift_dashboard import record_drift_event
+        for ev in drift_events:
+            record_drift_event(
+                ev["account_id"], ev["score_before"], ev["score_after"], ev["timestamp"]
+            )
+        print(f"      Pre-seeded {len(drift_events)} drift events to drift_events.json")
+    else:
+        print("      No ADWIN drift events accumulated during warm-up")
 
     # ── 7. Pre-cache Gemini explanations ────────────────────────
     print("[7/7] Pre-caching LLM explanations...")
