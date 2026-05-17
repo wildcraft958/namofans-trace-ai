@@ -143,9 +143,9 @@ export default function AlertPanel({ onSelect, selectedAlertId }: Props) {
               onClick={() => onSelect?.(alert.alert_id)}
               style={{
                 padding: "10px 14px",
-                borderBottom: "1px solid #13161f",
+                borderBottom: "1px solid #1a1510",
                 cursor: "pointer",
-                background: isSelected ? "#151a25" : "transparent",
+                background: isSelected ? "#1a1208" : "transparent",
                 borderLeft: isSelected ? `3px solid ${rs.color}` : "3px solid transparent",
                 transition: "background 0.15s",
               }}
@@ -183,7 +183,7 @@ export default function AlertPanel({ onSelect, selectedAlertId }: Props) {
                       style={{
                         fontSize: 9,
                         padding: "1px 6px",
-                        background: "#1c1f2a",
+                        background: "#1a1510",
                         color: "#6b7280",
                         borderRadius: 8,
                       }}

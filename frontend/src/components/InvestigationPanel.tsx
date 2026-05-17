@@ -105,8 +105,8 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
             placeholder='e.g. "Show circular flows above ₹5L"'
             style={{
               flex: 1,
-              background: "#151922",
-              border: "1px solid #2d3250",
+              background: "#120d08",
+              border: "1px solid #2a1e0e",
               borderRadius: 8,
               padding: "8px 12px",
               color: "#d1d5db",
@@ -120,10 +120,10 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
             disabled={loading || !query.trim()}
             style={{
               padding: "8px 14px",
-              background: loading ? "#1c1f2a" : "#1a3060",
-              border: "1px solid #2a4a8c",
+              background: loading ? "#1a1510" : "#2a1800",
+              border: `1px solid ${loading ? "#2a1e0e" : "#6a3a0a"}`,
               borderRadius: 8,
-              color: loading ? "#555" : "#7aa2ff",
+              color: loading ? "#555" : "#f97316",
               cursor: loading ? "not-allowed" : "pointer",
               fontSize: 12,
               fontWeight: 600,
@@ -164,10 +164,10 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
                   style={{
                     fontSize: 10,
                     padding: "3px 9px",
-                    background: "#11141d",
-                    border: "1px solid #2d3250",
+                    background: "#0e0b07",
+                    border: "1px solid #2a1e0e",
                     borderRadius: 20,
-                    color: "#93c5fd",
+                    color: "#fb923c",
                     cursor: "pointer",
                     transition: "all 0.15s",
                     fontFamily: "inherit",
@@ -202,8 +202,8 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
             <div
               style={{
                 padding: "10px 12px",
-                background: "#0d1420",
-                border: "1px solid #1a2540",
+                background: "#0d0b08",
+                border: "1px solid #2a1e0e",
                 borderRadius: 8,
               }}
             >
@@ -225,19 +225,19 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
 
             <div style={{ display: "flex", gap: 8 }}>
               {[
-                { label: "Accounts", value: result.result_nodes?.length ?? 0, color: "#7aa2ff" },
-                { label: "Txns", value: result.result_edges?.length ?? 0, color: "#a78bfa" },
+                { label: "Accounts", value: result.result_nodes?.length ?? 0, color: "#f97316" },
+                { label: "Txns", value: result.result_edges?.length ?? 0, color: "#fb923c" },
                 { label: "Latency", value: `${result.latency_ms}ms`, color: "#4ade80" },
               ].map((s) => (
                 <div
                   key={s.label}
                   style={{
                     flex: 1,
-                    background: "#151922",
+                    background: "#120d08",
                     borderRadius: 8,
                     padding: "6px 8px",
                     textAlign: "center",
-                    border: "1px solid #1c1f2a",
+                    border: "1px solid #2a1e0e",
                   }}
                 >
                   <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.value}</div>
@@ -276,10 +276,10 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
                       style={{
                         fontSize: 10,
                         padding: "2px 7px",
-                        background: "#1c2030",
-                        border: "1px solid #2d3250",
+                        background: "#1c1208",
+                        border: "1px solid #3a2010",
                         borderRadius: 5,
-                        color: "#93c5fd",
+                        color: "#fb923c",
                         fontFamily: "monospace",
                       }}
                     >
@@ -312,7 +312,7 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
                         justifyContent: "space-between",
                         alignItems: "center",
                         padding: "4px 8px",
-                        background: "#151922",
+                        background: "#120d08",
                         borderRadius: 5,
                         fontSize: 10,
                       }}
@@ -322,7 +322,7 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
                       </span>
                       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                         <span style={{ color: "#6b7280" }}>{e.channel}</span>
-                        <span style={{ color: "#7aa2ff", fontWeight: 600 }}>
+                        <span style={{ color: "#f97316", fontWeight: 600 }}>
                           ₹{Number(e.amount).toLocaleString("en-IN")}
                         </span>
                       </div>
@@ -340,8 +340,8 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
               style={{
                 alignSelf: "flex-start",
                 padding: "4px 10px",
-                background: "#1c1f2a",
-                border: "1px solid #2d3250",
+                background: "#1a1510",
+                border: "1px solid #2a1e0e",
                 borderRadius: 5,
                 color: "#6b7280",
                 cursor: "pointer",

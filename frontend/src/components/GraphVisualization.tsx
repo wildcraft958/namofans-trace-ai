@@ -182,7 +182,7 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
               width: 36,
               height: 36,
               border: "3px solid #1c1f2a",
-              borderTop: "3px solid #7aa2ff",
+              borderTop: "3px solid #f97316",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",
             }}

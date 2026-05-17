@@ -28,13 +28,13 @@ const FEATURES = [
     icon: "⚡",
     title: "SHAP Explainability",
     desc: "TreeExplainer on XGBoost surfaces the top-5 graph features driving every alert. Investigators see why, not just what.",
-    accent: "#a78bfa",
+    accent: "#fb923c",
   },
   {
     icon: "〜",
     title: "Live Drift Detection",
     desc: "River HalfSpaceTrees + ADWIN detect distribution shifts in real time. Inject a pattern and watch the timeline react.",
-    accent: "#38bdf8",
+    accent: "#f97316",
   },
 ];
 

@@ -141,7 +141,7 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
             <Section title="Risk Score Breakdown">
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {Object.entries(data.risk_contributions ?? {}).map(([key, val]) => (
-                  <div key={key} style={{ background: "#151922", borderRadius: 8, padding: "10px 12px" }}>
+                  <div key={key} style={{ background: "#120d08", borderRadius: 8, padding: "10px 12px" }}>
                     <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>
                       {COMPONENT_LABEL[key] ?? key}
                     </div>
@@ -150,7 +150,7 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
                         style={{
                           flex: 1,
                           height: 6,
-                          background: "#1c1f2a",
+                          background: "#2a1e0e",
                           borderRadius: 3,
                           overflow: "hidden",
                         }}
@@ -202,7 +202,7 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
                         <span style={{ fontSize: 11, color: "#9ca3af", minWidth: 160, textAlign: "right" }}>
                           {f.feature.replace(/_/g, " ")}
                         </span>
-                        <div style={{ flex: 1, height: 12, background: "#1c1f2a", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+                        <div style={{ flex: 1, height: 12, background: "#2a1e0e", borderRadius: 4, overflow: "hidden", position: "relative" }}>
                           <div
                             style={{
                               width: `${pct * 100}%`,
@@ -235,11 +235,11 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
                       key={p}
                       style={{
                         padding: "4px 10px",
-                        background: "#1c2030",
-                        border: "1px solid #2d3250",
+                        background: "#1c1208",
+                        border: "1px solid #3a2010",
                         borderRadius: 8,
                         fontSize: 12,
-                        color: "#93c5fd",
+                        color: "#fb923c",
                       }}
                     >
                       {p.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
@@ -260,9 +260,9 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
                     lineHeight: 1.7,
                     fontStyle: "italic",
                     padding: "12px 14px",
-                    background: "#0d1420",
+                    background: "#0d0b08",
                     borderRadius: 8,
-                    border: "1px solid #1a2540",
+                    border: "1px solid #2a1e0e",
                   }}
                 >
                   "{data.llm_explanation}"
@@ -275,7 +275,7 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
               <Section title="Compliance Rules Triggered">
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   {data.compliance_rules.map((r) => (
-                    <div key={r.rule_id} style={{ display: "flex", justifyContent: "space-between", padding: "6px 10px", background: "#151922", borderRadius: 6 }}>
+                    <div key={r.rule_id} style={{ display: "flex", justifyContent: "space-between", padding: "6px 10px", background: "#120d08", borderRadius: 6 }}>
                       <span style={{ fontSize: 12, color: "#d1d5db", fontFamily: "monospace" }}>{r.rule_id}</span>
                       <span style={{ fontSize: 11, color: RISK_COLOR[r.severity] ?? "#6b7280" }}>{r.severity}</span>
                     </div>
@@ -285,15 +285,15 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
             )}
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 10, marginTop: 20, paddingTop: 16, borderTop: "1px solid #1c1f2a" }}>
+            <div style={{ display: "flex", gap: 10, marginTop: 20, paddingTop: 16, borderTop: "1px solid #2a1e0e" }}>
               <STRDownload alertId={alertId} />
               <button
                 onClick={onClose}
                 style={{
                   padding: "6px 16px",
-                  background: "#1c1f2a",
+                  background: "#1a1510",
                   color: "#9ca3af",
-                  border: "1px solid #2d3250",
+                  border: "1px solid #2a1e0e",
                   borderRadius: 6,
                   cursor: "pointer",
                   fontSize: 12,

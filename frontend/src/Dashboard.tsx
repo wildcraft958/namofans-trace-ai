@@ -63,7 +63,7 @@ export default function Dashboard() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: "linear-gradient(90deg, #0b0d12 0%, #0e1220 100%)",
+            background: "linear-gradient(90deg, #0b0d0f 0%, #100d09 100%)",
             flexShrink: 0,
           }}
         >
