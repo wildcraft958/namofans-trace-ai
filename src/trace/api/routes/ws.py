@@ -17,29 +17,38 @@ router = APIRouter()
 async def alert_stream(ws: WebSocket) -> None:
     await ws.accept()
     scorer = get_scorer()
-    g = get_graph()
-    nodes = list(g.nodes())
 
     try:
         while True:
             await asyncio.sleep(8)
 
-            # Score a batch of random accounts and push high-risk ones
-            sample = random.sample(nodes, min(10, len(nodes)))
+            # Refresh graph each tick so injected accounts are included
+            g = get_graph()
+            nodes = list(g.nodes())
             pushed = []
 
+            # Drain drift events accumulated by inject_pattern or prior ticks
+            for ev in scorer.drain_drift_events():
+                pushed.append({
+                    "type": "drift_event",
+                    "account_id": ev["account_id"],
+                    "score": ev["score_after"],
+                })
+
+            # Score a random sample — add small jitter so ADWIN sees distribution change
+            sample = random.sample(nodes, min(10, len(nodes)))
             for account_id in sample:
                 node_data = g.nodes[account_id]
+                jitter = random.uniform(-0.3, 0.3)
                 features = {
-                    "degree_in": float(g.in_degree(account_id)),
-                    "degree_out": float(g.out_degree(account_id)),
+                    "degree_in": max(0.0, float(g.in_degree(account_id)) + jitter),
+                    "degree_out": max(0.0, float(g.out_degree(account_id)) + jitter),
                     "dormant_days": float(node_data.get("dormant_days", 0)),
                     "kyc_risk_score": {"LOW": 0.0, "MEDIUM": 0.5, "HIGH": 1.0}.get(
                         str(node_data.get("kyc_risk", "LOW")), 0.0
                     ),
                 }
                 score = scorer.update(account_id, features)
-
                 if scorer.has_drift(account_id):
                     pushed.append({
                         "type": "drift_event",
@@ -119,9 +128,14 @@ async def inject_pattern() -> dict:
         )
 
     scorer = get_scorer()
+    # Establish normal baseline so ADWIN has a reference distribution
     for acc in [*accounts, beneficiary]:
-        features = {"degree_in": 3.0, "degree_out": 3.0, "dormant_days": 0.0, "kyc_risk_score": 1.0}
-        scorer.update(acc, features)
+        for _ in range(25):
+            scorer.update(acc, {"degree_in": 1.0, "degree_out": 1.0, "dormant_days": 0.0, "kyc_risk_score": 0.0})
+    # Inject anomalous features — ADWIN will detect the distribution shift
+    for acc in [*accounts, beneficiary]:
+        for _ in range(10):
+            scorer.update(acc, {"degree_in": 12.0, "degree_out": 8.0, "dormant_days": 95.0, "kyc_risk_score": 1.0})
 
     return {
         "injected_accounts": [*accounts, beneficiary],
