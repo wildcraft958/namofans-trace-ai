@@ -56,7 +56,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   return (
     <div
       style={{
-        background: "#0e1117",
+        background: "#100e0b",
         border: "1px solid #2a1e0e",
         borderRadius: 6,
         padding: "6px 10px",
@@ -116,8 +116,8 @@ export default function DriftTimeline() {
   return (
     <div
       style={{
-        background: "#0e1117",
-        border: "1px solid #1c1f2a",
+        background: "#100e0b",
+        border: "1px solid #1c1510",
         borderRadius: 10,
         padding: "12px 14px",
         display: "flex",
@@ -155,7 +155,7 @@ export default function DriftTimeline() {
             disabled={injecting}
             style={{
               padding: "4px 12px",
-              background: injecting ? "#1c1f2a" : "#2d1f00",
+              background: injecting ? "#1c1510" : "#2d1f00",
               border: `1px solid ${injecting ? "#2a1e0e" : "#a05c00"}`,
               borderRadius: 6,
               color: injecting ? "#555" : "#f59e0b",

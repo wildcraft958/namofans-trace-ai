@@ -100,9 +100,9 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
       style={{
         position: "relative",
         borderRadius: 12,
-        background: "radial-gradient(ellipse at center, #0d1117 0%, #0b0d12 100%)",
+        background: "radial-gradient(ellipse at center, #100e0b 0%, #0d0a08 100%)",
         overflow: "hidden",
-        border: "1px solid #1c1f2a",
+        border: "1px solid #1c1510",
         height: "100%",
         minHeight: 400,
       }}
@@ -171,7 +171,7 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "rgba(11,13,18,0.85)",
+            background: "rgba(13,10,8,0.85)",
             zIndex: 20,
             flexDirection: "column",
             gap: 14,
@@ -181,7 +181,7 @@ export default function GraphVisualization({ focusAccountId, onNodeClick }: Prop
             style={{
               width: 36,
               height: 36,
-              border: "3px solid #1c1f2a",
+              border: "3px solid #1c1510",
               borderTop: "3px solid #f97316",
               borderRadius: "50%",
               animation: "spin 0.8s linear infinite",

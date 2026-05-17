@@ -36,12 +36,12 @@ export default function Dashboard() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
         }
-        html, body { margin: 0; padding: 0; background: #0b0d12; }
+        html, body { margin: 0; padding: 0; background: #0d0a08; }
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0b0d12; }
-        ::-webkit-scrollbar-thumb { background: #1c1f2a; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #0d0a08; }
+        ::-webkit-scrollbar-thumb { background: #1c1510; border-radius: 4px; }
         input:focus { border-color: #f97316 !important; }
       `}</style>
 
@@ -50,7 +50,7 @@ export default function Dashboard() {
           display: "grid",
           gridTemplateRows: "auto 1fr auto",
           height: "100vh",
-          background: "#0b0d12",
+          background: "#0d0a08",
           color: "#e6e8ee",
           overflow: "hidden",
         }}
@@ -59,11 +59,11 @@ export default function Dashboard() {
         <header
           style={{
             padding: "10px 20px",
-            borderBottom: "1px solid #1c1f2a",
+            borderBottom: "1px solid #1c1510",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: "linear-gradient(90deg, #0b0d0f 0%, #100d09 100%)",
+            background: "linear-gradient(90deg, #0e0b08 0%, #130e09 100%)",
             flexShrink: 0,
           }}
         >
@@ -111,11 +111,11 @@ export default function Dashboard() {
             }}>LIVE</span>
             <Link to="/" style={{
               textDecoration: "none", color: "#6b7280", fontSize: 11,
-              border: "1px solid #1c1f2a", borderRadius: 16,
+              border: "1px solid #1c1510", borderRadius: 16,
               padding: "4px 12px", transition: "color 0.2s, border-color 0.2s",
             }}
             onMouseOver={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#e5e7eb"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "#374151"; }}
-            onMouseOut={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#6b7280"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1c1f2a"; }}
+            onMouseOut={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#6b7280"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1c1510"; }}
             >← Home</Link>
           </div>
         </header>
@@ -145,12 +145,12 @@ export default function Dashboard() {
             <div style={{
               display: "grid", gridTemplateRows: "auto 1fr",
               minHeight: 0, overflow: "hidden",
-              background: "#0e1117", border: "1px solid #1c1f2a", borderRadius: 10,
+              background: "#100e0b", border: "1px solid #1c1510", borderRadius: 10,
             }}>
               <div style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "8px 14px",
-                borderBottom: "1px solid #1c1f2a",
+                borderBottom: "1px solid #1c1510",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{

@@ -75,9 +75,9 @@ export default function AlertPanel({ onSelect, selectedAlertId }: Props) {
   return (
     <div
       style={{
-        background: "#0e1117",
+        background: "#100e0b",
         borderRadius: 10,
-        border: "1px solid #1c1f2a",
+        border: "1px solid #1c1510",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -88,7 +88,7 @@ export default function AlertPanel({ onSelect, selectedAlertId }: Props) {
       <div
         style={{
           padding: "10px 14px",
-          borderBottom: "1px solid #1c1f2a",
+          borderBottom: "1px solid #1c1510",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",

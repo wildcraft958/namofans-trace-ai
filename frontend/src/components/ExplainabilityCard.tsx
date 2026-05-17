@@ -78,7 +78,7 @@ export default function ExplainabilityCard({ alertId, onClose }: Props) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#0e1117",
+          background: "#100e0b",
           border: `1px solid ${riskColor}40`,
           borderRadius: 14,
           padding: 28,

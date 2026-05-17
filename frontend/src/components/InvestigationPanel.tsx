@@ -49,8 +49,8 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
   return (
     <div
       style={{
-        background: "#0e1117",
-        border: "1px solid #1c1f2a",
+        background: "#100e0b",
+        border: "1px solid #1c1510",
         borderRadius: 10,
         display: "flex",
         flexDirection: "column",
@@ -62,7 +62,7 @@ export default function InvestigationPanel({ onSubgraphFocus }: Props) {
       <div
         style={{
           padding: "10px 14px",
-          borderBottom: "1px solid #1c1f2a",
+          borderBottom: "1px solid #1c1510",
           display: "flex",
           alignItems: "center",
           gap: 8,
