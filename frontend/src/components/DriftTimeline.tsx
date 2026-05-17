@@ -65,7 +65,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     >
       <div style={{ color: "#6b7280" }}>{d.time}</div>
       <div style={{ color: "#d1d5db", fontFamily: "monospace" }}>{d.account_id}</div>
-      <div style={{ color: d.isDrift ? "#e74c3c" : "#7aa2ff", fontWeight: 700 }}>
+      <div style={{ color: d.isDrift ? "#e74c3c" : "#f97316", fontWeight: 700 }}>
         Score: {d.score}%{d.isDrift ? " ⚠ DRIFT" : ""}
       </div>
     </div>
@@ -195,8 +195,8 @@ export default function DriftTimeline() {
             <AreaChart data={points} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <defs>
                 <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7aa2ff" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#7aa2ff" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -217,11 +217,11 @@ export default function DriftTimeline() {
               <Area
                 type="monotone"
                 dataKey="score"
-                stroke="#7aa2ff"
+                stroke="#f97316"
                 strokeWidth={1.5}
                 fill="url(#scoreGrad)"
                 dot={<CustomDot />}
-                activeDot={{ r: 4, fill: "#7aa2ff" }}
+                activeDot={{ r: 4, fill: "#f97316" }}
                 isAnimationActive={false}
               />
             </AreaChart>
@@ -236,7 +236,7 @@ export default function DriftTimeline() {
             style={{
               width: 8,
               height: 2,
-              background: "#7aa2ff",
+              background: "#f97316",
               display: "inline-block",
               borderRadius: 2,
             }}

@@ -141,10 +141,39 @@ export default function Dashboard() {
             }}
           >
             <KPICards />
-            <GraphVisualization
-              focusAccountId={focusAccountId}
-              onNodeClick={handleNodeClick}
-            />
+            <div style={{
+              display: "grid", gridTemplateRows: "auto 1fr",
+              minHeight: 0, overflow: "hidden",
+              background: "#0e1117", border: "1px solid #1c1f2a", borderRadius: 10,
+            }}>
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "8px 14px",
+                borderBottom: "1px solid #1c1f2a",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{
+                    width: 7, height: 7, borderRadius: "50%",
+                    background: "#f97316", boxShadow: "0 0 6px #f97316",
+                    animation: "pulse 2s ease-in-out infinite",
+                  }} />
+                  <span style={{ fontWeight: 700, fontSize: 12, color: "#d1d5db", letterSpacing: 0.3 }}>
+                    Fund Flow Graph
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: 12, fontSize: 10, color: "#4b5563" }}>
+                  <span>1,500+ nodes</span>
+                  <span>·</span>
+                  <span>8 fraud rings</span>
+                  <span>·</span>
+                  <span style={{ color: "#22c55e" }}>XGBoost AUC 1.0</span>
+                </div>
+              </div>
+              <GraphVisualization
+                focusAccountId={focusAccountId}
+                onNodeClick={handleNodeClick}
+              />
+            </div>
           </section>
 
           {/* Right column: Alerts + Investigation */}
