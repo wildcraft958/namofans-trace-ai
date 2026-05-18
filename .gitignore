@@ -109,6 +109,9 @@ docker-compose.override.yml
 secrets/
 *.pem
 *.key
+google_service_key.json
+*_service_key.json
+*service_account*.json
 
 # OS
 Thumbs.db
@@ -118,6 +121,13 @@ Thumbs.db
 .claude/
 CLAUDE.local.md
 .claude.local.json
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# AMLSim tool (local dev only, not part of submission)
+amlsim_tool/
+amlsim_config/
 
 # Project-specific
 audit.db
