@@ -101,7 +101,7 @@ const ARCH_LAYERS = [
 const TECH_STACK = [
   { layer: "Data", tech: "IBM AMLSim · Pandas · Faker" },
   { layer: "Graph Engine", tech: "NetworkX · Neo4j Community + GDS" },
-  { layer: "GNN", tech: "PyTorch Geometric — TGNMemory + TransformerConv" },
+  { layer: "GNN", tech: "PyTorch Geometric — TGNMemory + TransformerConv (ChronoWave-inspired)" },
   { layer: "Imbalance", tech: "GraphSMOTE · Focal Loss" },
   { layer: "Online ML", tech: "River — HalfSpaceTrees · ADWIN" },
   { layer: "Compliance", tech: "YAML rule engine (hot-reloadable)" },
