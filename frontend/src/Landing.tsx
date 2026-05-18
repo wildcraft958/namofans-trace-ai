@@ -906,7 +906,7 @@ export default function Landing() {
             </button>
           </Link>
           <div style={{ marginTop: 48, color: "#374151", fontSize: 12, letterSpacing: 0.5 }}>
-            Team NamoFans · iDEA 2.0 Hackathon · PS3
+            Team NamoFans · IIT Kharagpur · iDEA 2.0 Hackathon · PS3
           </div>
         </section>
 
