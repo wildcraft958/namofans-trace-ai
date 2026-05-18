@@ -53,7 +53,7 @@ const FEATURES = [
 const STATS = [
   { value: "₹71,543 Cr", label: "Annual bank fraud (RBI 2024-25)" },
   { value: "95%+", label: "False positive rate in rule-based systems" },
-  { value: "AUC 0.70", label: "TGN on IBM AMLSim 20K-node graph" },
+  { value: "AUC 0.72", label: "TGN on IBM AMLSim 20K-node graph" },
   { value: "<2 s", label: "Alert latency over WebSocket" },
 ];
 
@@ -621,7 +621,7 @@ export default function Landing() {
               </div>
               {[
                 { n: "1", title: "Graph Pattern Matcher", desc: "NetworkX algorithms for money mule fan-in/out, circular flows, and structuring clusters." },
-                { n: "2", title: "Temporal GNN", desc: "TGN (TGNMemory + TransformerConv) classifies suspicious nodes from evolving structural patterns. AUC 0.70 on IBM AMLSim." },
+                { n: "2", title: "Temporal GNN", desc: "TGN (TGNMemory + TransformerConv) classifies suspicious nodes from evolving structural patterns. AUC 0.72 on IBM AMLSim 20K-node graph." },
                 { n: "3", title: "Online Anomaly Scorer", desc: "HalfSpaceTrees build per-account baselines via streaming learning. <1ms latency." },
                 { n: "4", title: "LLM Copilot", desc: "Auto-generates FIU-IND compliant STR packages in <5 minutes." },
               ].map((item) => (
@@ -718,11 +718,11 @@ export default function Landing() {
             borderRadius: 14, overflow: "hidden", marginTop: 48,
           }}>
             {[
-              { val: "37%", sub: "FP reduction vs static GNN baseline" },
+              { val: "5 rings", sub: "AML typologies: circular · layering · mule · structuring · dormant burst" },
               { val: "5 min", sub: "STR generation (was 4–6 hrs)" },
               { val: "Real-time", sub: "Fraud ID (IBM 2024: 277 days)" },
-              { val: "AUC 0.70", sub: "TGN on IBM AMLSim 20K nodes" },
-              { val: "<15%", sub: "Target false positive rate" },
+              { val: "AUC 0.72", sub: "TGN on IBM AMLSim 20K-node graph" },
+              { val: "4-signal", sub: "Pattern + TGN + anomaly + compliance fusion" },
             ].map((m) => (
               <div key={m.val} style={{
                 padding: "24px 16px", textAlign: "center",

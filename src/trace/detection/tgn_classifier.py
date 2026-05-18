@@ -166,6 +166,13 @@ class TGNClassifier(nn.Module):
         z_emb = self.gnn(z, edge_index)
         return torch.sigmoid(self.mlp(z_emb).squeeze(-1))
 
+    def score_from_memory(self, edge_index: torch.Tensor) -> torch.Tensor:
+        """Score all nodes using current memory state (no update)."""
+        n_id = torch.arange(self.num_nodes, device=edge_index.device)
+        z, _ = self.memory(n_id)
+        z_emb = self.gnn(z, edge_index)
+        return torch.sigmoid(self.mlp(z_emb).squeeze(-1))
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -365,7 +372,11 @@ def score(
     account_ids: list[str],
     node_map: dict[str, int] | None = None,
 ) -> dict[str, float]:
-    """Score accounts. Returns {account_id: risk_probability}."""
+    """Score accounts. Returns {account_id: risk_probability}.
+
+    Processes edges in batches (matching training) to properly warm up TGN memory
+    before the final scoring pass.
+    """
     from trace.graph.export import to_pyg
 
     model.eval()
@@ -378,14 +389,19 @@ def score(
     if data.src.shape[0] == 0:
         return {acc_id: 0.0 for acc_id in account_ids}
 
-    src = data.src
-    dst = data.dst
-    t = data.t
-    msg = data.msg
-    edge_index = _build_edge_index(src, dst, len(node_map))
-
+    # Warm up memory with all edges in batches (same as training)
+    loader = TemporalDataLoader(
+        TemporalData(src=data.src, dst=data.dst, t=data.t, msg=data.msg),
+        batch_size=_BATCH_SIZE,
+    )
     with torch.no_grad():
-        all_probs = model.get_all_scores(src, dst, t, msg, edge_index).cpu().numpy()
+        for batch in loader:
+            model.memory.update_state(batch.src, batch.dst, batch.t.long(), batch.msg)
+
+    # Score all nodes from final memory state
+    edge_index = _build_edge_index(data.src, data.dst, len(node_map))
+    with torch.no_grad():
+        all_probs = model.score_from_memory(edge_index).cpu().numpy()
 
     return {
         acc_id: float(all_probs[node_map[acc_id]])
