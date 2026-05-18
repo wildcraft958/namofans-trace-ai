@@ -6,6 +6,10 @@ Generates 5,000 accounts + 100,000 transactions with 5 seeded fraud rings:
   3. Structuring cluster (3 accounts, 4x ₹9.5L same-day)
   4. Mule fan-in/fan-out (12 → aggregator → 8 receivers)
   5. Dormant burst (95 days inactive → 5x ₹8L in 6 hours)
+
+AMLSim integration:
+  generate_from_amlsim(output_dir) tries to load IBM AMLSim output CSVs first.
+  Falls back to the custom generator when AMLSim data is not available.
 """
 
 from __future__ import annotations
@@ -257,3 +261,91 @@ def generate(
                             a.age_days, a.dormant_days, a.name])
 
     return accounts, transactions
+
+
+# ── AMLSim-first entry point ──────────────────────────────────────────────
+
+def generate_from_amlsim(
+    output_dir: Path | None = None,
+    amlsim_dir: Path | None = None,
+    num_accounts: int = 5_000,
+    num_transactions: int = 100_000,
+    seed: int = 42,
+) -> tuple[list[Account], list[Transaction]]:
+    """Return (accounts, transactions), preferring AMLSim data when available.
+
+    Priority order:
+      1. AMLSim output CSVs in *amlsim_dir* (default: data/amlsim/)
+      2. Pre-generated CSVs in *output_dir* / data/sample/ (our own generator output)
+      3. Live run of the custom synthetic generator
+
+    Args:
+        output_dir: Directory for writing/reading our custom generator CSVs.
+        amlsim_dir: Directory containing AMLSim output (accounts.csv + transactions.csv).
+                    Defaults to ``data/amlsim`` relative to cwd.
+        num_accounts: Account count for fallback generator.
+        num_transactions: Transaction count for fallback generator.
+        seed: RNG seed for fallback generator.
+    """
+    from trace.data import amlsim_loader  # local import to avoid circular deps
+
+    # ── 1. Try AMLSim output directory ────────────────────────────────────
+    if amlsim_dir is None:
+        amlsim_dir = Path("data/amlsim")
+
+    result = amlsim_loader.load(amlsim_dir)
+    if result is not None:
+        print(f"[generate_from_amlsim] Using IBM AMLSim data from {amlsim_dir}")
+        accounts, transactions = result
+        # Optionally persist to output_dir so other pipeline steps can read CSVs
+        if output_dir:
+            _write_csvs(accounts, transactions, Path(output_dir))
+        return accounts, transactions
+
+    # ── 2. Fall back to pre-generated CSVs ────────────────────────────────
+    if output_dir:
+        out = Path(output_dir)
+        txn_csv = out / "transactions.csv"
+        acc_csv = out / "accounts.csv"
+        if txn_csv.exists() and acc_csv.exists():
+            print(f"[generate_from_amlsim] AMLSim data not found; loading cached CSVs from {out}")
+            from trace.data.ingestion import (
+                df_to_accounts,
+                df_to_transactions,
+                load_accounts_csv,
+                load_amlsim_csv,
+            )
+            accounts = df_to_accounts(load_accounts_csv(acc_csv))
+            transactions = df_to_transactions(load_amlsim_csv(txn_csv))
+            return accounts, transactions
+
+    # ── 3. Fall back to custom generator ──────────────────────────────────
+    print(
+        "[generate_from_amlsim] AMLSim data not found; falling back to "
+        "custom synthetic generator"
+    )
+    return generate(
+        num_accounts=num_accounts,
+        num_transactions=num_transactions,
+        seed=seed,
+        output_dir=output_dir,
+    )
+
+
+def _write_csvs(accounts: list[Account], transactions: list[Transaction], out: Path) -> None:
+    """Write accounts + transactions to CSV for downstream pipeline steps."""
+    out.mkdir(parents=True, exist_ok=True)
+    with open(out / "transactions.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["txn_id", "sender", "receiver", "amount", "timestamp",
+                    "channel", "fraud_label", "fraud_type"])
+        for t in transactions:
+            w.writerow([t.txn_id, t.sender, t.receiver, t.amount,
+                        t.timestamp.isoformat(), t.channel, int(t.fraud_label), t.fraud_type])
+    with open(out / "accounts.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["account_id", "account_type", "ifsc", "kyc_risk",
+                    "age_days", "dormant_days", "name"])
+        for a in accounts:
+            w.writerow([a.account_id, a.account_type, a.ifsc, a.kyc_risk,
+                        a.age_days, a.dormant_days, a.name])

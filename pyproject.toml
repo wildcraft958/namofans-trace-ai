@@ -31,6 +31,11 @@ dependencies = [
     "google-cloud-aiplatform>=1.50",
     "reportlab>=3.6",
 
+    # Graph ML (TGN)
+    "torch>=2.0",
+    "torch_geometric>=2.5",
+    "rapidfuzz>=3.0",
+
     # Data generation
     "faker>=24.0",
 
@@ -60,6 +65,7 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+exclude = ["amlsim_tool"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "RUF"]

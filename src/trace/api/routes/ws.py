@@ -24,7 +24,7 @@ async def alert_stream(ws: WebSocket) -> None:
 
     try:
         while True:
-            await asyncio.sleep(8)
+            await asyncio.sleep(1.5)
 
             # Refresh graph each tick so injected accounts are included
             g = get_graph()

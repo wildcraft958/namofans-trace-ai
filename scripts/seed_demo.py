@@ -18,7 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from trace.data.feature_engineering import build_feature_matrix
-from trace.data.generator import generate
+from trace.data.generator import generate_from_amlsim
 from trace.detection import gnn_classifier
 from trace.detection.anomaly_scorer import OnlineScorer
 from trace.detection.compliance_engine import ComplianceEngine
@@ -39,13 +39,14 @@ def main() -> None:
     print("TRACE.ai seed_demo.py -- full pipeline")
     print("=" * 60)
 
-    # ── 1. Generate synthetic data ──────────────────────────────
-    print("\n[1/7] Generating synthetic data (1500 accounts, 20000 txns, 8 fraud rings)...")
-    accounts, transactions = generate(
+    # ── 1. Generate data (AMLSim preferred, custom generator fallback) ─────
+    print("\n[1/7] Loading data (IBM AMLSim preferred, custom generator fallback)...")
+    accounts, transactions = generate_from_amlsim(
+        output_dir=Path("data/sample"),
+        amlsim_dir=Path("data/amlsim"),
         num_accounts=1500,
         num_transactions=20_000,
         seed=42,
-        output_dir=Path("data/sample"),
     )
 
     # ── 2. Build graph ──────────────────────────────────────────
@@ -65,8 +66,15 @@ def main() -> None:
         model, scaler = gnn_classifier.load()
     else:
         print("[4/7] Training XGBoost classifier...")
+        # For AMLSim data: SAR accounts have kyc_risk="HIGH" (set by amlsim_loader).
+        # For custom generator data: fraud ring accounts start with "RING-".
         labels = pd.Series(
-            {a.account_id: 1 if a.account_id.startswith("RING-") else 0 for a in accounts},
+            {
+                a.account_id: 1
+                if (a.account_id.startswith("RING-") or a.kyc_risk == "HIGH")
+                else 0
+                for a in accounts
+            },
             name="fraud_label",
         )
         labels = labels.reindex(feature_df.index).fillna(0).astype(int)
@@ -181,7 +189,7 @@ def main() -> None:
             ev["account_id"], ev["score_before"], ev["score_after"], ev["timestamp"]
         )
     print(f"      Drained {len(drift_events)} ADWIN drift events")
-    _seed_drift_history()
+    _seed_drift_history(accounts)
     print("      Drift history seeded (20 events over 4-hour window)")
 
     # ── 7. Pre-cache Gemini explanations ────────────────────────
@@ -197,7 +205,7 @@ def main() -> None:
     print(f"  Alerts: {len(alerts)} | Graph: {g.number_of_nodes()} nodes")
 
 
-def _seed_drift_history() -> None:
+def _seed_drift_history(accounts: list | None = None) -> None:
     """Write 20 synthetic drift events so DriftTimeline always shows a rich chart."""
     import json
     import random as _rand
@@ -213,13 +221,22 @@ def _seed_drift_history() -> None:
     if needed == 0:
         return
 
-    ring_pool = (
-        [f"RING-CF-{j:02d}" for j in range(5)]
-        + [f"RING-LY-{j:02d}" for j in range(4)]
-        + ["RING-MU-00", "RING-DB-00"]
-        + [f"RING-CF2-{j:02d}" for j in range(5)]
-        + ["RING-MU2-00", "RING-LY2-00", "RING-LY2-01"]
-    )
+    # Build pool from SAR/high-risk accounts when AMLSim data is present,
+    # otherwise fall back to the static RING- prefix list.
+    if accounts:
+        ring_pool = [a.account_id for a in accounts if a.kyc_risk == "HIGH"][:20]
+    else:
+        ring_pool = []
+
+    if not ring_pool:
+        # Default RING- pool for custom generator runs
+        ring_pool = (
+            [f"RING-CF-{j:02d}" for j in range(5)]
+            + [f"RING-LY-{j:02d}" for j in range(4)]
+            + ["RING-MU-00", "RING-DB-00"]
+            + [f"RING-CF2-{j:02d}" for j in range(5)]
+            + ["RING-MU2-00", "RING-LY2-00", "RING-LY2-01"]
+        )
 
     now = datetime.now(timezone.utc)
     rng = _rand.Random(99)

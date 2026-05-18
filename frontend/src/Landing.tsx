@@ -53,7 +53,7 @@ const FEATURES = [
 const STATS = [
   { value: "₹71,543 Cr", label: "Annual bank fraud (RBI 2024-25)" },
   { value: "95%+", label: "False positive rate in rule-based systems" },
-  { value: "AUC >96%", label: "THG-OAFN temporal-aware benchmark" },
+  { value: "AUC 0.70", label: "TGN on IBM AMLSim 20K-node graph" },
   { value: "<2 s", label: "Alert latency over WebSocket" },
 ];
 
@@ -73,7 +73,7 @@ const ARCH_LAYERS = [
     color: "#fb923c",
     items: [
       "A: Pattern Matcher (5 AML typologies)",
-      "B: Temporal GNN — ChronoWave + THG-OAFN",
+      "B: Temporal GNN — TGNMemory + TransformerConv (PyG 2.7)",
       "C: Online Anomaly Scorer — River HST + ADWIN",
       "D: Compliance Rule Engine (YAML, hot-reload)",
       "E: Risk Fusion — pattern(0.30) + GNN(0.30) + anomaly(0.20) + compliance(0.20)",
@@ -83,9 +83,9 @@ const ARCH_LAYERS = [
     label: "Layer 3 — Intelligence",
     color: "#c084fc",
     items: [
-      "F: LLM Alert Explainer (GPT-4o-mini / Claude Haiku)",
-      "G: NL Investigation Copilot (NL→Graph Query)",
-      "H: Auto-STR Generator (FIU-IND compliant PDF)",
+      "F: LLM Copilot (Gemini 2.5 Flash — NL→Graph Query)",
+      "G: Auto-STR Generator (FIU-IND compliant PDF via ReportLab)",
+      "H: GNN Explainer (gradient saliency — top-k contributing edges)",
     ],
   },
   {
@@ -101,12 +101,12 @@ const ARCH_LAYERS = [
 const TECH_STACK = [
   { layer: "Data", tech: "IBM AMLSim · Pandas · Faker" },
   { layer: "Graph Engine", tech: "NetworkX · Neo4j Community + GDS" },
-  { layer: "GNN", tech: "PyTorch Geometric — TGN + ChronoWave-style encoder" },
+  { layer: "GNN", tech: "PyTorch Geometric — TGNMemory + TransformerConv" },
   { layer: "Imbalance", tech: "GraphSMOTE · Focal Loss" },
   { layer: "Online ML", tech: "River — HalfSpaceTrees · ADWIN" },
   { layer: "Compliance", tech: "YAML rule engine (hot-reloadable)" },
-  { layer: "LLM", tech: "GPT-4o-mini / Claude Haiku via LiteLLM" },
-  { layer: "NL→Query", tech: "Vanna.ai-inspired NL→Cypher/NetworkX" },
+  { layer: "LLM", tech: "Gemini 2.5 Flash (Google AI — NL copilot + STR)" },
+  { layer: "NL→Query", tech: "Gemini 2.5 Flash NL→NetworkX Python executor" },
   { layer: "Reporting", tech: "ReportLab (FIU-IND STR PDFs)" },
   { layer: "Backend", tech: "FastAPI · WebSocket · SQLite" },
   { layer: "Frontend", tech: "React · react-force-graph-3d (Three.js)" },
@@ -621,7 +621,7 @@ export default function Landing() {
               </div>
               {[
                 { n: "1", title: "Graph Pattern Matcher", desc: "NetworkX algorithms for money mule fan-in/out, circular flows, and structuring clusters." },
-                { n: "2", title: "Temporal GNN", desc: "ChronoWave-GNN classifies suspicious nodes from evolving structural patterns. AUC >96%." },
+                { n: "2", title: "Temporal GNN", desc: "TGN (TGNMemory + TransformerConv) classifies suspicious nodes from evolving structural patterns. AUC 0.70 on IBM AMLSim." },
                 { n: "3", title: "Online Anomaly Scorer", desc: "HalfSpaceTrees build per-account baselines via streaming learning. <1ms latency." },
                 { n: "4", title: "LLM Copilot", desc: "Auto-generates FIU-IND compliant STR packages in <5 minutes." },
               ].map((item) => (
@@ -721,7 +721,7 @@ export default function Landing() {
               { val: "37%", sub: "FP reduction vs static GNN baseline" },
               { val: "5 min", sub: "STR generation (was 4–6 hrs)" },
               { val: "Real-time", sub: "Fraud ID (IBM 2024: 277 days)" },
-              { val: ">96% AUC", sub: "THG-OAFN temporal benchmark" },
+              { val: "AUC 0.70", sub: "TGN on IBM AMLSim 20K nodes" },
               { val: "<15%", sub: "Target false positive rate" },
             ].map((m) => (
               <div key={m.val} style={{

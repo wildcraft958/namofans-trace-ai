@@ -7,7 +7,8 @@ Per DECISIONS.md ADR-0002 and the hackathon organiser's sample D3:
 "GNNs require significantly more compute than POC scope allows."
 XGBoost on graph features achieves AUC > 0.90 on AMLSim synthetic data.
 
-TGN / GraphSAGE deferred to v2 when real bank data is available.
+Routing: if a trained TGN model exists, score_account() delegates to it.
+XGBoost remains the fallback when TGN has not been trained yet.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from __future__ import annotations
 import pickle
 from pathlib import Path
 
+import networkx as nx
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
@@ -92,3 +94,70 @@ def score(model, scaler, feature_df: pd.DataFrame) -> dict[str, float]:
 
 def model_exists() -> bool:
     return _MODEL_PATH.exists() and _SCALER_PATH.exists()
+
+
+# ---------------------------------------------------------------------------
+# TGN-routing entry point (used by API / scoring pipelines)
+# ---------------------------------------------------------------------------
+
+def score_account(graph: nx.MultiDiGraph, account_id: str) -> float:
+    """Return fraud probability for a single account.
+
+    Routes to TGN if a trained model exists; falls back to XGBoost otherwise.
+    Returns 0.0 if neither model is trained.
+    """
+    try:
+        from trace.detection import tgn_classifier
+        if tgn_classifier.model_exists():
+            tgn_model, node_map = tgn_classifier.load()
+            scores = tgn_classifier.score(tgn_model, graph, [account_id], node_map=node_map)
+            return scores.get(account_id, 0.0)
+    except Exception as e:
+        print(f"[gnn_classifier] TGN scoring failed ({e}), falling back to XGBoost")
+
+    if not model_exists():
+        return 0.0
+
+    # XGBoost fallback — needs feature_df; build minimal single-row frame
+    try:
+        xgb_model, xgb_scaler = load()
+        features = _extract_single_account_features(graph, account_id)
+        feat_df = pd.DataFrame([features], index=[account_id])
+        scores_xgb = score(xgb_model, xgb_scaler, feat_df)
+        return scores_xgb.get(account_id, 0.0)
+    except Exception as e:
+        print(f"[gnn_classifier] XGBoost fallback also failed ({e})")
+        return 0.0
+
+
+def _extract_single_account_features(graph: nx.MultiDiGraph, account_id: str) -> dict:
+    """Build the 11 XGBoost features for a single account on-the-fly."""
+    node_data = graph.nodes.get(account_id, {})
+    kyc_map = {"LOW": 0.1, "MEDIUM": 0.5, "HIGH": 0.9}
+
+    in_edges = list(graph.in_edges(account_id, data=True))
+    out_edges = list(graph.out_edges(account_id, data=True))
+
+    amounts_out = [d.get("amount", 0) for _, _, d in out_edges]
+    counterparties = {v for _, v, _ in out_edges} | {u for u, _, _ in in_edges}
+
+    pr_map = nx.pagerank(graph, alpha=0.85, max_iter=50)
+    cc_graph = nx.Graph(graph)
+    cc_map = nx.clustering(cc_graph)
+
+    return {
+        "degree_in": len(in_edges),
+        "degree_out": len(out_edges),
+        "pagerank": pr_map.get(account_id, 0.0),
+        "clustering_coeff": cc_map.get(account_id, 0.0),
+        "txn_velocity_7d": len(out_edges),  # simplified
+        "avg_amount_out": float(sum(amounts_out) / max(len(amounts_out), 1)),
+        "std_amount_out": float(
+            (sum((a - sum(amounts_out) / max(len(amounts_out), 1)) ** 2
+                 for a in amounts_out) / max(len(amounts_out), 1)) ** 0.5
+        ) if amounts_out else 0.0,
+        "max_amount_out": float(max(amounts_out)) if amounts_out else 0.0,
+        "unique_counterparties": len(counterparties),
+        "dormant_days": node_data.get("dormant_days", 0),
+        "kyc_risk_score": kyc_map.get(node_data.get("kyc_risk", "LOW"), 0.1),
+    }
