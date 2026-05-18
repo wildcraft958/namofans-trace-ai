@@ -106,7 +106,7 @@ const TECH_STACK = [
   { layer: "Online ML", tech: "River — HalfSpaceTrees · ADWIN" },
   { layer: "Compliance", tech: "YAML rule engine (hot-reloadable)" },
   { layer: "LLM", tech: "Gemini 2.5 Flash (Google AI — NL copilot + STR)" },
-  { layer: "NL→Query", tech: "Gemini 2.5 Flash NL→NetworkX Python executor" },
+  { layer: "NL→Query", tech: "Vanna.ai-inspired NL→Cypher/NetworkX" },
   { layer: "Reporting", tech: "ReportLab (FIU-IND STR PDFs)" },
   { layer: "Backend", tech: "FastAPI · WebSocket · SQLite" },
   { layer: "Frontend", tech: "React · react-force-graph-3d (Three.js)" },
