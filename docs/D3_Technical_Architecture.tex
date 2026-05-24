@@ -63,21 +63,27 @@
 % ============================================================
 \begin{document}
 
-% ---- Title block ----
-\begin{tikzpicture}[remember picture, overlay]
-  \fill[traceblue] (current page.north west) rectangle ([yshift=-20mm]current page.north east);
+% ---- Title block (self-contained TikZ picture — text nodes sit on the blue bar) ----
+\noindent\begin{tikzpicture}
+  \fill[traceblue] (0,0) rectangle (\linewidth, 22mm);
+  \fill[traceorange] (0,0) rectangle (4pt, 22mm);
+  % Row 1: project name left, subtitle right
+  \node[anchor=west, text=white, font=\Large\bfseries]
+    at (6pt, 16.5mm) {TRACE.ai};
+  \node[anchor=east, text=white!75!traceblue, font=\small]
+    at (\linewidth-4pt, 16.5mm) {Transaction Risk Analysis and Compliance Engine};
+  % Row 2: hackathon info
+  \node[anchor=center, text=traceorange, font=\footnotesize\bfseries]
+    at (0.5\linewidth, 10mm)
+    {iDEA Hackathon 2.0 \textbullet{} PSBs Hackathon Series 2026 \textbullet{} Union Bank of India \textbullet{} PS3};
+  % Row 3: team
+  \node[anchor=center, text=white!65!traceblue, font=\footnotesize]
+    at (0.5\linewidth, 4mm)
+    {Team \textbf{NamoFans} \textbullet{} IIT Kharagpur \textbullet{}
+     Animesh Raj \textbullet{} Devansh Gupta \textbullet{} Prem Agarwal \textbullet{} MD.~Faizan Khan};
 \end{tikzpicture}
-
-\vspace*{-4mm}
-{\color{white}\Large\textbf{TRACE.ai}}\hfill{\color{white!80!traceblue}\small Transaction Risk Analysis and Compliance Engine}
-
-\vspace{1mm}
-{\color{traceorange}\footnotesize\textbf{iDEA Hackathon 2.0 \textbullet{} PSBs Hackathon Series 2026 \textbullet{} Union Bank of India \textbullet{} PS3}}
-
-\vspace{0.5mm}
-{\color{white!70!traceblue}\footnotesize Team \textbf{NamoFans} \textbullet{} IIT Kharagpur \textbullet{} Animesh Raj \textbullet{} Devansh Gupta \textbullet{} Prem Agarwal \textbullet{} MD.~Faizan Khan}
-
-\vspace{6mm}
+\thispagestyle{empty}
+\vspace{4mm}
 
 \section{System Overview}
 
