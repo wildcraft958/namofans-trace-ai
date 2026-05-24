@@ -1,159 +1,106 @@
-# TRACE.ai — Deliverables & Demo Script
+# TRACE.ai — D5 Pitch Video Script (5 minutes)
 
-## What's done vs what's left
-
-| Deliverable | Status |
-|---|---|
-| D1 — Problem + Solution Brief | Done (`docs/D1_Problem_Solution_Brief.md`) |
-| D3 — Technical Architecture | Done (`docs/D3_Technical_Architecture.md`) |
-| D4 — GitHub repo + README | Done (pushed, live) |
-| D2 — Technical Demo Video | Needs recording |
-| D5 — Pitch Video + Slide Deck | Needs recording |
-| Deploy | Build df333d56 running now |
+**Format:** Screen share of https://trace-ai-4xnj5ovp4a-uc.a.run.app + voiceover
+**Upload:** YouTube Unlisted
+**Structure (portal requirement):** problem → solution → demo → team
 
 ---
 
-## D2 — Technical Demo Video Script (5-7 min)
+## [0:00–0:45] PROBLEM
 
-**Setup before recording:** Open three tabs — Landing page, Dashboard, GitHub repo. Have the
-deployed URL ready. Seed is already in the container.
+> "Indian banks lost Rs. 71,543 crore to fraud in FY 2024-25. The systems designed to catch
+> this generate 95% false positives — investigators spend their entire day dismissing noise.
+> The median gap between fraud starting and detection is 277 days. By then, recovery is
+> impossible. And the fraud that escapes detection entirely? Multi-hop fund flows: money
+> that moves through 8 intermediate accounts before disappearing. No single transaction is
+> suspicious. Only the chain is — and today's rules cannot see chains."
 
----
-
-### [0:00-0:30] — Hook
-
-> "India loses over 71,000 crore rupees annually to bank fraud. Today's AML systems flag
-> everything — 95% of alerts are false positives. Investigators drown in noise. TRACE.ai
-> fixes that."
-
-Show the landing page. Scroll slowly through stats bar.
+Show landing page. Scroll slowly through the stats bar.
 
 ---
 
-### [0:30-1:30] — The problem is structural
+## [0:45–1:30] SOLUTION
 
-> "Rule-based systems see transactions one at a time. They miss money mule rings, layering
-> chains that span 8 hops, and structuring patterns that stay individually below threshold.
-> These aren't anomalies in isolation — they're only visible as a graph."
+> "TRACE.ai models every bank account as a node and every transaction as a directed edge.
+> The entire bank becomes a graph. Fraud rings become structural patterns that emerge only
+> at the network level. Four detection engines run in parallel: a graph pattern matcher,
+> an XGBoost classifier on 11 graph features, a per-account streaming anomaly scorer with
+> zero batch retraining, and a YAML compliance engine that hot-reloads new RBI circulars
+> in 5 seconds. Their signals are fused into one composite risk score."
 
-Show the "The Problem" section on the landing page. Let it breathe.
-
-> "TRACE.ai models the entire bank as a temporal graph — every account a node, every
-> transaction a directed edge with timestamp, amount, and channel. Then we run five
-> detection layers simultaneously."
+Show architecture section on landing page briefly, then cut to dashboard.
 
 ---
 
-### [1:30-3:00] — Live dashboard walkthrough
+## [1:30–3:30] LIVE DEMO
 
 Navigate to `/dashboard`. Let the 3D graph load.
 
-> "This is a live deployment on Google Cloud Run. 20,000 accounts, 120,000 transactions
-> from IBM's AMLSim benchmark — the regulator-recognized synthetic AML dataset."
+> "This is live on Google Cloud Run. 542 accounts, 5,049 transactions. Five fraud rings
+> seeded — the orange clusters are active detections."
 
-Point to the 3D graph.
+Click a CRITICAL alert.
 
-> "Each orange cluster is a detected fraud ring. The graph updates in real time — new
-> transactions arrive every 1.5 seconds via WebSocket."
+> "Every alert comes with SHAP attribution — which graph features drove the score and by
+> how much. Gemini 2.5 Flash writes a plain-English explanation grounded in the actual
+> transaction evidence from the graph. No hallucination. No black box."
 
-Point to the alert stream on the right.
+Click STR Download.
 
-> "High-risk alerts surface here automatically. Let me click one."
+> "One click. An 8-section FIU-IND compliant PDF — cover, subject account, fund trail,
+> risk breakdown, AI narrative, recommended action. Generated in under 5 seconds.
+> This used to take 4 to 6 hours per case."
 
-Click a CRITICAL alert. ExplainabilityCard opens.
+Click Investigation Copilot. Type: `Show circular flows above 5 lakhs in the last 7 days`
 
-> "SHAP breaks down why this account was flagged — what fraction of the risk score comes
-> from the pattern detector, from the Temporal GNN, from the anomaly scorer, and from the
-> compliance engine. A single number is a black box. Four numbers with weights are
-> explainable."
-
-Point to the SHAP bars. Then point to the LLM text.
-
-> "Gemini 2.5 Flash generates a plain-English narrative grounded in the actual transaction
-> evidence — not hallucinated accounts, real ones from the graph."
+> "Officers ask in plain English. The system maps the intent to a graph query and runs it
+> live. No SQL, no Cypher."
 
 ---
 
-### [3:00-4:00] — The differentiator: STR in 5 minutes
+## [3:30–4:30] ARCHITECTURE + IMPACT
 
-> "Here's what actually matters to a compliance officer. Right now, filing a Suspicious
-> Transaction Report takes 4 to 6 hours — manual write-up, regulatory formatting, evidence
-> compilation. Watch this."
+Show architecture section or D3 diagram briefly.
 
-Click STR Download button.
+> "XGBoost AUC above 0.99 on synthetic test data. Compliance rules are YAML — a new RBI
+> circular takes effect in 5 seconds without a deployment. The entire system runs in one
+> Docker container on Cloud Run."
 
-> "That's an 8-section FIU-IND compliant PDF. Cover, subject account, transaction table,
-> fund trail diagram, risk score breakdown, AI narrative, recommended action, evidence
-> metadata. Generated in under 5 seconds. This is the only team you'll see today with a
-> regulator-shaped artifact."
-
----
-
-### [4:00-5:00] — NL Copilot + Live Inject
-
-> "Investigators don't think in SQL. They think in questions."
-
-Click the Investigation Copilot. Type: `Show me all circular flows above 5 lakhs in the last 7 days`
-
-> "Gemini parses the intent, generates NetworkX traversal code, executes it against the
-> live graph, and returns the result nodes. No SQL, no Cypher — natural language directly
-> to graph query."
-
-Click "Inject Pattern" button.
-
-> "I'm now injecting a new fraud ring into the live graph. Watch the drift timeline."
-
-Point to DriftTimeline — drift events should appear within 1-2 seconds.
-
-> "ADWIN detected the distribution shift in real time. The compliance engine hot-reloads
-> rules from a YAML file — no restart. That's operational sophistication."
+Pause on impact numbers:
+- False positives: 95%+ rule-only → target below 15%
+- STR prep time: 4–6 hours → under 5 minutes
+- Detection scope: single-transaction → multi-hop depth 6
 
 ---
 
-### [5:00-5:45] — Architecture + numbers
+## [4:30–5:00] TEAM + CLOSE
 
-> "Under the hood: IBM AMLSim 20,000-node graph, Temporal Graph Network trained on real
-> data — AUC 0.72. Five AML typologies: circular flows, layering chains, structuring
-> patterns, money mule clusters, dormant burst accounts. Four detection signals fused with
-> calibrated weights. Entity resolution via rapidfuzz catches alias accounts that
-> launderers use to split exposure."
+> "Team NamoFans from IIT Kharagpur: Animesh Raj, Devansh Gupta, Prem Agarwal, Faizan Khan.
+> The system is live at trace-ai-4xnj5ovp4a-uc.a.run.app. All code and docs are in the
+> public GitHub repo. Thank you."
 
-Briefly show the Architecture section on the landing page.
+Show the live URL in the browser address bar as the final frame.
 
 ---
 
-### [5:45-6:15] — Close
+## After Recording
 
-> "TRACE.ai is designed for Union Bank's operational environment — FIU-IND compliance built
-> in, Account Aggregator ecosystem compatible, hot-reloadable rules so compliance teams
-> don't need engineers. The system is live now at trace-ai-4xnj5ovp4a-uc.a.run.app."
-
-Show the URL in the browser.
-
-> "GitHub repo, deployed URL, technical docs — all in the submission. Thank you."
+1. Upload to YouTube as **Unlisted**
+2. Copy the YouTube link
+3. Add it to `README.md` under `## Live Demo` (replace the "recording in progress" placeholder)
+4. Paste the YouTube link in the D5 field of the submission portal before May 31, 2026
 
 ---
 
-## D5 — Pitch Video (5 min, non-technical)
-
-Simpler version. Same structure but no code, no terminals. Just:
-
-1. The 71,543 Cr problem (30s)
-2. Show the dashboard + STR button (2 min, let the UI do the talking)
-3. "Why TRACE.ai wins" — 3 slides: Regulatory artifact (STR), Explainability (SHAP), Operational maturity (hot-reload + NL copilot)
-4. Team + ask (30s)
-
-**Slide deck:** Pull the Architecture diagram from `docs/D3_Technical_Architecture.md` and the
-tech stack table. 6-8 slides max. Judges read slides between sessions — keep them dense
-with numbers, not fluffy.
-
----
-
-## End-to-end verification (after build deploys)
+## Pre-Recording Checklist
 
 ```bash
+# Verify deployment is up
 curl https://trace-ai-4xnj5ovp4a-uc.a.run.app/api/health
-# Open /dashboard in browser — graph should load
-# Click an alert — SHAP + LLM text should appear
-# Click STR Download — PDF should download
+
+# Open in browser and confirm:
+# - 3D graph loads with orange fraud clusters
+# - Clicking an alert shows SHAP card + LLM explanation
+# - STR Download produces a PDF
+# - Copilot responds to a natural language query
 ```
