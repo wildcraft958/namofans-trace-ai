@@ -144,8 +144,8 @@ audit.sqlite*
 *.synctex.gz
 texput.log
 
-# Organizer reference docs (local only, do not commit)
-submission/organizer_*
+# Internal submission planning folder (local only, do not commit)
+submission/
 
 # Internal strategy and planning docs (competitor intel, internal ADRs — do not expose on public repo)
 RESEARCH.md
