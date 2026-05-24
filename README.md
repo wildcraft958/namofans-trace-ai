@@ -21,7 +21,9 @@ Indian banks lost **₹71,543 Cr** to fraud in FY 2024-25 (RBI Annual Report). R
 
 ## Live Demo
 
-**[https://trace-ai-4xnj5ovp4a-uc.a.run.app](https://trace-ai-4xnj5ovp4a-uc.a.run.app)**
+**Live App:** [https://trace-ai-4xnj5ovp4a-uc.a.run.app](https://trace-ai-4xnj5ovp4a-uc.a.run.app)
+
+**Demo Video:** _Recording in progress — YouTube link will be added before May 31, 2026_
 
 The dashboard loads with 8 pre-seeded alerts across a 542-node, 5049-edge transaction graph containing five fraud ring typologies.
 
@@ -223,8 +225,6 @@ Risk fusion blends all four signals: pattern(30%) + classifier(30%) + anomaly(20
 | Prem Agarwal | Full-Stack & Data Visualization |
 | MD. Faizan Khan | NLP, LLMs & Compliance |
 
-**Team:** NamoFans · IIT Kharagpur · Contact: animeshraj958@gmail.com
-
 ---
 
 ## Deliverables
@@ -250,6 +250,15 @@ Risk fusion blends all four signals: pattern(30%) + classifier(30%) + anomaly(20
 - **Gemini explanations pre-cached.** Live LLM calls fall back to templates if Vertex AI quota is exceeded.
 - **NetworkX for prototype scale.** Adequate for 500-5000 accounts; Neo4j GDS is the v2 upgrade for production-scale (millions of accounts).
 - **FIU-IND STR format is simulated.** The PDF follows the 8-section structure but is not legally compliant — no digital signature or official submission channel.
+
+---
+
+## Contact
+
+**Team:** NamoFans
+**Institute:** IIT Kharagpur
+**Email:** animeshraj958@gmail.com
+**Hackathon:** iDEA 2.0 (PSBs Hackathon Series 2026) — PS3
 
 ---
 
