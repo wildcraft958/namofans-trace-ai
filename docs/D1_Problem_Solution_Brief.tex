@@ -1,0 +1,186 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[a4paper, top=20mm, bottom=16mm, left=18mm, right=18mm]{geometry}
+\usepackage{palatino}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{mdframed}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+
+% --- Colors ---
+\definecolor{traceblue}{HTML}{1A3C5E}
+\definecolor{traceorange}{HTML}{E87722}
+\definecolor{tracered}{HTML}{DC2626}
+\definecolor{tracegreen}{HTML}{16A34A}
+
+% --- Section formatting ---
+\titleformat{\section}{\color{traceblue}\large\bfseries}{}{0em}{}[\color{traceorange}\rule{\linewidth}{1.2pt}]
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titleformat{\subsection}{\color{traceblue}\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+% --- Header / Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{traceblue}\textbf{TRACE.ai} \quad\textcolor{gray}{Problem and Solution Brief}}
+\fancyhead[R]{\small\color{traceblue}iDEA 2.0 \textbullet{} PS3 \textbullet{} NamoFans}
+\fancyfoot[C]{\small\color{gray}\thepage}
+
+% --- List and table setup ---
+\setlist[itemize]{itemsep=1pt, topsep=2pt, parsep=0pt, leftmargin=12pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\setlength{\parskip}{3pt}
+
+% ============================================================
+\begin{document}
+
+% ---- Title block ----
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[traceblue] (current page.north west) rectangle ([yshift=-20mm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{-4mm}
+{\color{white}\Large\textbf{TRACE.ai}}\hfill{\color{white!80!traceblue}\small Transaction Risk Analysis and Compliance Engine}
+
+\vspace{1mm}
+{\color{traceorange}\footnotesize\textbf{iDEA Hackathon 2.0 \textbullet{} PSBs Hackathon Series 2026 \textbullet{} Union Bank of India \textbullet{} PS3}}
+
+\vspace{0.5mm}
+{\color{white!70!traceblue}\footnotesize Team \textbf{NamoFans} \textbullet{} IIT Kharagpur \textbullet{} Animesh Raj \textbullet{} Devansh Gupta \textbullet{} Prem Agarwal \textbullet{} MD.~Faizan Khan}
+
+\vspace{6mm}
+
+% ===========================
+%  PAGE 1: THE PROBLEM
+% ===========================
+
+\section{The Problem}
+
+\begin{mdframed}[backgroundcolor=tracered!7,linecolor=tracered,linewidth=0.7pt,innerleftmargin=7pt,innerrightmargin=7pt,innertopmargin=4pt,innerbottommargin=4pt]
+\small Indian banks lost \textbf{Rs.~71,543~Cr} to fraud in FY~2024-25 (RBI Annual Report). The infrastructure designed to prevent this is not underfunded; it is broken by design.
+\end{mdframed}
+
+\subsection{Who Is Affected and How Severely}
+
+\begin{itemize}
+  \item \textbf{Direct:} Union Bank's AML compliance teams process hundreds of false alerts daily. Genuine fraud rings are buried due to investigator fatigue.
+  \item \textbf{Financial:} IBM's 2024 Financial Services benchmark finds a \textbf{277-day median gap} between fraud initiation and detection. By then, recovery is effectively impossible.
+  \item \textbf{Operational:} Manual Suspicious Transaction Report (STR) preparation takes \textbf{4 to 6 hours per case}. STR quality varies across officers, reducing the intelligence value of every FIU-IND filing.
+  \item \textbf{Regulatory:} Under PMLA 2002, PSBs face penalties for late or incomplete STR filings.
+\end{itemize}
+
+\subsection{Why Current Approaches Fail}
+
+Rule-based AML systems at Indian PSBs operate on fixed thresholds, generating 95\%+ false positive rates. Three fundamental failures result:
+
+\smallskip
+\begin{tabularx}{\linewidth}{L{3.0cm} X}
+\toprule
+\textbf{\color{traceblue}Failure Mode} & \textbf{Consequence} \\
+\midrule
+95\%+ false positives & Investigators spend their day dismissing noise. Genuine fraud rings are buried. \\[2pt]
+Single-transaction scope & Multi-hop laundering is invisible to per-transaction rules. Funds move through 4 to 8 intermediate accounts with no single hop triggering a threshold. \\[2pt]
+Reactive, not adaptive & Rules are static. New fraud typologies require a deployment cycle before becoming detectable. \\[2pt]
+No cross-account correlation & Siloed systems cannot connect related accounts executing coordinated round-trips. \\
+\bottomrule
+\end{tabularx}
+
+\subsection{The Patterns That Rules Miss}
+
+\begin{itemize}
+  \item \textbf{Layering chains:} Funds traverse 4 to 8 intermediate accounts, each forwarding more than 70\% of received value within 48 hours. No single hop is suspicious; the chain is.
+  \item \textbf{Round-trip (circular flow):} Money exits Account A, passes through 3 to 6 accounts, and returns within 72 hours. Net movement is zero. The purpose is to fabricate a paper trail of legitimate activity.
+  \item \textbf{Structuring:} Multiple transactions just below Rs.~10~lakh are split across beneficiaries on the same day to evade CTR thresholds.
+\end{itemize}
+
+\newpage
+
+% ===========================
+%  PAGE 2: THE SOLUTION
+% ===========================
+
+\section{The Solution: TRACE.ai}
+
+\textbf{TRACE.ai} is a graph-native AML intelligence platform. Every banking transaction becomes a directed edge in a dynamic graph. Fraud patterns emerge as structural properties of the graph, detectable only at the network level.
+
+\subsection{Core Architecture: Four Parallel Detection Signals}
+
+\begin{tabularx}{\linewidth}{L{2.8cm} X}
+\toprule
+\textbf{\color{traceblue}Signal (weight)} & \textbf{How It Works} \\
+\midrule
+Pattern Matcher (30\%) & Five AML typology detectors on a NetworkX MultiDiGraph: circular flow, layering, structuring, mule fan-in/out, dormant burst. \\[2pt]
+Graph Classifier (30\%) & XGBoost on 11 graph-structural features (PageRank, betweenness, velocity, KYC risk). AUC above 0.99 on synthetic test data. \\[2pt]
+Online Anomaly (20\%) & River HalfSpaceTrees per-account behavioral baselines with ADWIN drift detection, sub-millisecond latency, no batch retraining. \\[2pt]
+Compliance Engine (20\%) & YAML-defined rules encoding RBI Master Directions, PMLA 2002, and FIU-IND STR triggers. Hot-reloadable without a system restart. \\
+\bottomrule
+\end{tabularx}
+
+\smallskip
+Fused thresholds: \texttt{CRITICAL} $\geq 0.85$, \texttt{HIGH} $\geq 0.70$, \texttt{MEDIUM} $\geq 0.50$.
+
+\subsection{Intelligence Layer}
+
+\begin{itemize}
+  \item \textbf{SHAP Explainability:} TreeExplainer attribution on every alert, showing the top-5 graph features that drove the risk score.
+  \item \textbf{Gemini LLM Explainer:} Structured evidence sent to Gemini 2.5 Flash for a 2 to 3 sentence plain-English explanation per alert.
+  \item \textbf{NL Investigation Copilot:} Officers ask in English (e.g., ``Show circular flows above Rs.~5~lakh in the last 7~days''); the system dispatches to 6 pattern-specific graph query handlers.
+  \item \textbf{Auto-STR Generator:} One click produces a FIU-IND compliant 8-section A4 PDF. Generation takes under 5 minutes (previously 4 to 6 hours per case).
+\end{itemize}
+
+\subsection{Built vs.\ Planned}
+
+\begin{tabularx}{\linewidth}{L{3.8cm} L{4.4cm} X}
+\toprule
+\textbf{Capability} & \textbf{\color{tracegreen}Demonstrable in POC} & \textbf{\color{traceorange}Planned (Not Yet Built)} \\
+\midrule
+Graph engine & NetworkX (542 nodes, 5,049 edges) & Neo4j GDS for millions of accounts \\[1pt]
+Pattern detection & 5 AML typologies, live & 15 to 20 additional typologies \\[1pt]
+ML classifier & XGBoost, AUC $>$ 0.99 (synthetic) & Full TGN with real-bank data \\[1pt]
+Online anomaly scorer & River HST + ADWIN, under 1\,ms & Kafka for real-time CBS stream \\[1pt]
+Compliance engine & YAML hot-reload, RBI/PMLA/FIU-IND & Auto-update from RBI circular API \\[1pt]
+Explainability & SHAP + Gemini per alert & Counterfactual explanations \\[1pt]
+STR generator & 8-section FIU-IND PDF in under 5\,s & Digital signature, submission channel \\[1pt]
+Dashboard & React 3D force-graph, live alerts & Multi-branch, multi-bank view \\[1pt]
+Data source & IBM AMLSim (100\% synthetic) & Union Bank CBS API integration \\[1pt]
+Authentication & None (POC only) & LDAP/SSO for compliance teams \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Measured Impact}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Metric} & \textbf{Before TRACE.ai} & \textbf{With TRACE.ai} \\
+\midrule
+False positive rate & 95\%+ (rule-only) & Target below 15\% \\
+STR preparation time & 4 to 6 hours & Under 5 minutes \\
+Detection scope & Single-transaction rules & Multi-hop graph (depth 6) \\
+ML adaptation & Quarterly batch retraining & Real-time, zero downtime \\
+\bottomrule
+\end{tabular}
+
+\vspace{4mm}
+\noindent\colorbox{traceblue!8}{\parbox{\dimexpr\linewidth-10pt\relax}{\footnotesize\color{traceblue}
+\textbf{Live prototype:} \url{https://trace-ai-4xnj5ovp4a-uc.a.run.app} \newline
+\textbf{Repository:} \url{https://github.com/wildcraft958/namofans-trace-ai}
+}}
+
+\end{document}

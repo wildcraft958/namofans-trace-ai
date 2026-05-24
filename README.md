@@ -164,25 +164,92 @@ cloudbuild.yaml        GCP Cloud Build pipeline
 
 ---
 
+## Dataset Description
+
+All data is **100% synthetic**. No real bank customer data is used anywhere in this prototype.
+
+| Property | Value |
+|---|---|
+| Source | IBM AMLSim (open-source AML simulation) |
+| Accounts (nodes) | 542 (demo graph); 20,000 (TGN training graph) |
+| Transactions (edges) | 5,049 (demo); ~200,000 (TGN training) |
+| Fraud rings seeded | 5 typologies: circular flow, layering, structuring, mule fan-in/out, dormant burst |
+| Anomaly injection rate | ~5% of accounts (matches published insider-fraud base rates) |
+| Indian banking parameters | NEFT/RTGS/UPI/IMPS channels; INR amounts; KYC tiers; RBI threshold at ₹10L |
+| Reproducibility | `python scripts/seed_demo.py` regenerates the demo graph deterministically |
+
+---
+
+## Model Performance (on Synthetic Test Set)
+
+These metrics are on synthetic AMLSim data. Real-bank data would require retraining with actual CBS feeds.
+
+| Model | AUC-ROC | Notes |
+|---|---|---|
+| XGBoost Classifier | > 0.99 | 11 graph features; trained on AMLSim 20K split 80/20 |
+| Temporal GNN (TGN) | 0.72 | Batched edge inference on 20K-node graph; `models/tgn_classifier.pt` |
+| Pattern Matcher | N/A (rule-based) | 5 typologies; precision depends on graph structure |
+| River Online Scorer | N/A (anomaly) | Per-account baseline; ADWIN drift detected in <1ms |
+
+Risk fusion blends all four signals: pattern(30%) + classifier(30%) + anomaly(20%) + compliance(20%).
+
+---
+
+## What Is Built vs What Is Planned
+
+| Capability | DEMONSTRABLE IN POC | PLANNED (NOT YET BUILT) |
+|---|---|---|
+| Graph engine | NetworkX MultiDiGraph (542 nodes, 5049 edges) | Neo4j GDS for millions of accounts |
+| Pattern detection | 5 AML typologies, all running live | 15-20 additional typologies |
+| ML classifier | XGBoost on 11 graph features (AUC > 0.99 synthetic) | Full TGN in production with real data |
+| Online anomaly | River HalfSpaceTrees + ADWIN, per-account baselines | Kafka integration for real-time CBS stream |
+| Compliance engine | YAML rules (RBI/PMLA/FIU-IND), hot-reload | Auto-update from RBI circular API |
+| Explainability | SHAP TreeExplainer per alert | Counterfactual explanations |
+| LLM explainer | Gemini 2.5 Flash (pre-cached + fallback) | Real-time Gemini calls at production quota |
+| NL Copilot | 10 intents + Gemini intent parser | Full natural-language query over Neo4j |
+| STR generator | 8-section FIU-IND PDF in <5 seconds | Legal sign-off integration, digital signature |
+| Dashboard | React 3D force-graph, alert queue, drift timeline | Multi-branch, multi-bank view |
+| Data source | IBM AMLSim synthetic data | Union Bank CBS API integration |
+| Auth | None (POC) | LDAP/SSO for bank compliance teams |
+
+---
+
+## Team
+
+| Name | Role |
+|---|---|
+| Animesh Raj | ML/AI & Graph Neural Networks |
+| Devansh Gupta | Backend Engineering & System Design |
+| Prem Agarwal | Full-Stack & Data Visualization |
+| MD. Faizan Khan | NLP, LLMs & Compliance |
+
+**Team:** NamoFans · IIT Kharagpur · Contact: animeshraj958@gmail.com
+
+---
+
 ## Deliverables
 
 | ID | Deliverable | Link |
 |---|---|---|
-| D1 | Problem + Solution Brief | [docs/D1_Problem_Solution_Brief.md](docs/D1_Problem_Solution_Brief.md) |
-| D2 | Technical Demo Video | TODO |
-| D3 | Technical Architecture | [docs/D3_Technical_Architecture.md](docs/D3_Technical_Architecture.md) |
+| D1 | Problem + Solution Brief | [docs/D1_Problem_Solution_Brief.pdf](docs/D1_Problem_Solution_Brief.pdf) |
+| D2 | Deployed URL | https://trace-ai-4xnj5ovp4a-uc.a.run.app |
+| D3 | Technical Architecture | [docs/D3_Technical_Architecture.pdf](docs/D3_Technical_Architecture.pdf) |
 | D4 | GitHub Repo + README | This file |
-| D5 | Pitch Video + Slide Deck | TODO |
+| D5 | Pitch Video | TODO |
 
 **Live URL:** https://trace-ai-4xnj5ovp4a-uc.a.run.app
 
 ---
 
-## Limitations
+## Known Limitations
 
-- Trained on IBM AMLSim synthetic data - real CBS integration is a Phase 3 goal
-- XGBoost used instead of full Temporal GNN (ChronoWave-GNN as designed in Phase 1) - validated POC approach; see `MODEL_CARD.md`
-- Gemini explanations are pre-cached at seed time; live LLM calls fall back to templates if quota is exceeded
+- **Synthetic data only.** Trained on IBM AMLSim; real CBS integration and retraining is a Phase 3 goal. Metrics (AUC > 0.99 XGBoost) are on synthetic test sets — real-bank performance would require revalidation.
+- **XGBoost, not a full Temporal GNN.** Phase 1 PPT described ChronoWave-GNN; the POC uses XGBoost on graph-structural features because PyG TGN requires significantly more training data and compute than a prototype allows. See `MODEL_CARD.md` for the full rationale. The TGN checkpoint (`models/tgn_classifier.pt`) is trained but is not part of the live risk fusion.
+- **Batch graph, not real-time stream.** The demo processes a pre-seeded CSV graph. Production would require Kafka for live CBS event ingestion.
+- **No user authentication.** The dashboard is publicly accessible (POC only). Production requires LDAP/SSO.
+- **Gemini explanations pre-cached.** Live LLM calls fall back to templates if Vertex AI quota is exceeded.
+- **NetworkX for prototype scale.** Adequate for 500-5000 accounts; Neo4j GDS is the v2 upgrade for production-scale (millions of accounts).
+- **FIU-IND STR format is simulated.** The PDF follows the 8-section structure but is not legally compliant — no digital signature or official submission channel.
 
 ---
 
