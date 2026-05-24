@@ -29,7 +29,7 @@ TRACE.ai handles sensitive transaction graphs. Even on synthetic data, treat the
 
 - LLM API keys live in `.env` (gitignored). Never commit.
 - Use `.env.example` to document new env vars.
-- If a key is ever committed, rotate immediately and force-push removal — but per global Claude rules, only with explicit human approval.
+- If a key is ever committed, rotate immediately and remove from git history with explicit team lead approval.
 
 ## Reporting
 
