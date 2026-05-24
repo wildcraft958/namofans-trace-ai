@@ -134,3 +134,15 @@ audit.db
 audit.sqlite*
 *.sqlite
 *.db
+
+# LaTeX build artifacts
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+texput.log
+
+# Organizer reference docs (local only, do not commit)
+submission/organizer_*
