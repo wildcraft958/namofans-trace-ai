@@ -150,3 +150,8 @@ submission/
 # Internal strategy and planning docs (competitor intel, internal ADRs — do not expose on public repo)
 RESEARCH.md
 DECISIONS.md
+
+# Internal submission scripts and planning docs (local only)
+SCRIPT.md
+D2_DEMO_SCRIPT.md
+PITCH_DECK_OUTLINE.md
